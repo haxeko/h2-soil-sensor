@@ -1,0 +1,17 @@
+Designator,Value,Reason
+C10,18pF C0G,DNP
+C11,18pF C0G,DNP
+C12,100nF,DNP
+H1,M2,not assembled
+H2,M2,not assembled
+PRB1,SoilProbe 80mm,not assembled
+R14,0R,DNP
+SW2,RESET,DNP
+TP1,VBAT,not assembled
+TP2,3V3,not assembled
+TP3,GND,not assembled
+TP4,VSENS,not assembled
+TP5,SOIL,not assembled
+TP6,PROBE,not assembled
+U2,ESP32-H2-WROOM-02C-H4S,not assembled
+Y1,32.768kHz 12.5pF,DNP
