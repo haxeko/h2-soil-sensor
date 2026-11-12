@@ -7,7 +7,7 @@ composited (green mask, ENIG pads, white silk, drill holes). Component bodies ar
 each footprint's F.Fab outline with simple per-type styles and a soft drop shadow.
 
 Usage: python3 render.py   (after gen_pcb.py)  ->  hardware/docs/render_top.png, render_bottom.png,
-                                                   render_v2.png (both sides)
+                                                   render.png (both sides)
 """
 from __future__ import annotations
 
@@ -191,6 +191,18 @@ def draw_component(d, fp, box, font_px):
         two_terminal(d, box, (176, 140, 92))
     elif ref.startswith("L"):
         two_terminal(d, box, (70, 72, 76), cap_len=0.45)
+    elif ref.startswith("D") and "LED" not in name:      # small-signal / TVS diode: body + cathode band
+        rect(d, box, (32, 32, 34), radius=0.08)
+        x1, y1, x2, y2 = box
+        k = [(x, y) for num, x, y, _, _ in pads_of(fp) if num == "1"]
+        if k:
+            kx, ky = k[0]
+            if (x2 - x1) >= (y2 - y1):
+                bx = x1 + 0.15 if kx < (x1 + x2) / 2 else x2 - 0.45
+                rect(d, (bx, y1 + 0.05, bx + 0.3, y2 - 0.05), (170, 170, 170), radius=0.03)
+            else:
+                by = y1 + 0.15 if ky < (y1 + y2) / 2 else y2 - 0.45
+                rect(d, (x1 + 0.05, by, x2 - 0.05, by + 0.3), (170, 170, 170), radius=0.03)
     elif ref.startswith("D"):
         two_terminal(d, box, (236, 236, 230), cap_len=0.3)
         x1, y1, x2, y2 = box
@@ -235,7 +247,7 @@ def components_layer(board):
     font_px = int(1.0 * PX)
     for fp in sorted(board.GetFootprints(), key=lambda f: f.GetReference()):
         ref = fp.GetReference()
-        if ref.startswith(("H", "TP")) or ref == "J3" or fp.HasProperty("DNP"):
+        if ref.startswith(("H", "TP")) or ref in ("J1", "J3") or fp.HasProperty("DNP"):
             continue
         box = fab_box(fp)
         if not box:
@@ -286,9 +298,9 @@ def main():
     both.paste(top, (0, 0))
     both.paste(bot, (top.width + gap, 0))
     both = both.resize((both.width // 2, both.height // 2), Image.LANCZOS)
-    both.save(os.path.join(DOCS, "render_v2.png"))
+    both.save(os.path.join(DOCS, "render.png"))
     print("renders:", os.path.join(DOCS, "render_top.png"), os.path.join(DOCS, "render_bottom.png"),
-          os.path.join(DOCS, "render_v2.png"))
+          os.path.join(DOCS, "render.png"))
 
 
 if __name__ == "__main__":

@@ -628,77 +628,6 @@
   )
   (symbol
     (lib_id "Connector:Conn_01x02_Pin")
-    (at 22.86 63.5 0)
-    (unit 1)
-    (in_bom yes)
-    (on_board yes)
-    (dnp no)
-    (uuid 942034cc-9c5e-59d3-b68c-1095f900a0dc)
-    (property "Reference" "J2" (at 21.59 60.96 0) (effects (font (size 1.27 1.27)) (justify right)))
-    (property "Value" "BAT (PH2.0)" (at 21.59 68.58 0) (effects (font (size 1.27 1.27)) (justify right)))
-    (property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical"
-      (at 22.86 63.5 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 22.86 63.5 0) (effects (font (size 1.27 1.27)) hide))
-    (property "LCSC" "C131337" (at 22.86 63.5 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "B2B-PH-K-S(LF)(SN)" (at 22.86 63.5 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Manufacturer" "JST" (at 22.86 63.5 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Note" "Pin 1 = BAT+ (phan cuc connector pin JST khong thong nhat giua cac hang -> co Q1 chong nguoc)"
-      (at 22.86 63.5 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid 6da45296-02b7-5407-ace1-649345238861))
-    (pin "2" (uuid c5283065-4561-5017-86fb-91e435ee17e0))
-    (instances
-      (project "h2-soil-sensor"
-        (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "J2")
-          (unit 1)
-        )
-      )
-    )
-  )
-  (wire
-    (pts (xy 27.94 63.5) (xy 30.48 63.5))
-    (stroke (width 0) (type default))
-    (uuid 7b46e75c-a669-58f0-998f-7d8f81247026)
-  )
-  (label "VBAT_RAW"
-    (at 30.48 63.5 0)
-    (fields_autoplaced)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 22fa7f02-d898-5b2b-b9a0-94c09c34d55c)
-  )
-  (wire
-    (pts (xy 27.94 66.04) (xy 30.48 66.04))
-    (stroke (width 0) (type default))
-    (uuid 8e6ee6f7-3b4b-5c05-9777-6b725acc4686)
-  )
-  (symbol
-    (lib_id "power:GND")
-    (at 30.48 66.04 90)
-    (unit 1)
-    (in_bom yes)
-    (on_board yes)
-    (dnp no)
-    (uuid e0b5addb-0116-54d7-8efc-fe2b02c9a891)
-    (property "Reference" "#PWR001" (at 30.48 66.04 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Value" "GND" (at 34.29 66.04 90) (effects (font (size 1.27 1.27)) (justify left) hide))
-    (property "Footprint" "" (at 30.48 66.04 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Datasheet" "" (at 30.48 66.04 0) (effects (font (size 1.27 1.27)) hide))
-    (pin "1" (uuid e2a8db54-da54-59b3-ac0c-89e0377dc8c9))
-    (instances
-      (project "h2-soil-sensor"
-        (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR001")
-          (unit 1)
-        )
-      )
-    )
-  )
-  (symbol
-    (lib_id "Connector:Conn_01x02_Pin")
     (at 22.86 83.82 0)
     (unit 1)
     (in_bom yes)
@@ -712,7 +641,7 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (at 22.86 83.82 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Note" "2 pad han day pin (+ / -), song song J2"
+    (property "Note" "2 pad han day pin (+ vuong / - tron)"
       (at 22.86 83.82 0)
       (effects (font (size 1.27 1.27)) hide)
     )
@@ -751,7 +680,7 @@
     (on_board yes)
     (dnp no)
     (uuid 7640f6c3-bbd7-59df-94b4-25509400c006)
-    (property "Reference" "#PWR002" (at 30.48 86.36 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR001" (at 30.48 86.36 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 34.29 86.36 90) (effects (font (size 1.27 1.27)) (justify left) hide))
     (property "Footprint" "" (at 30.48 86.36 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 30.48 86.36 0) (effects (font (size 1.27 1.27)) hide))
@@ -759,7 +688,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR002")
+          (reference "#PWR001")
           (unit 1)
         )
       )
@@ -828,7 +757,7 @@
     (on_board yes)
     (dnp no)
     (uuid 4a04efad-abf5-53f6-8085-8874f359298c)
-    (property "Reference" "#PWR003" (at 73.66 60.96 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR002" (at 73.66 60.96 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "VBAT" (at 77.47 60.96 270) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 73.66 60.96 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 73.66 60.96 0) (effects (font (size 1.27 1.27)) hide))
@@ -836,7 +765,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR003")
+          (reference "#PWR002")
           (unit 1)
         )
       )
@@ -912,7 +841,7 @@
     (on_board yes)
     (dnp no)
     (uuid 465229c6-e329-5d5b-86ef-5d4ff3511864)
-    (property "Reference" "#PWR004" (at 66.04 95.25 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR003" (at 66.04 95.25 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 66.04 99.06 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 66.04 95.25 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 66.04 95.25 0) (effects (font (size 1.27 1.27)) hide))
@@ -920,7 +849,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR004")
+          (reference "#PWR003")
           (unit 1)
         )
       )
@@ -972,7 +901,7 @@
     (on_board yes)
     (dnp no)
     (uuid 603f2f42-5872-5346-81a3-9d54b5c9a2fd)
-    (property "Reference" "#PWR005" (at 91.44 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR004" (at 91.44 69.85 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "VBAT" (at 91.44 66.04 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 91.44 69.85 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 91.44 69.85 0) (effects (font (size 1.27 1.27)) hide))
@@ -980,7 +909,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR005")
+          (reference "#PWR004")
           (unit 1)
         )
       )
@@ -999,7 +928,7 @@
     (on_board yes)
     (dnp no)
     (uuid 223e934d-d8ee-5512-82b5-dc2b32957f91)
-    (property "Reference" "#PWR006" (at 91.44 82.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR005" (at 91.44 82.55 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 91.44 86.36 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 91.44 82.55 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 91.44 82.55 0) (effects (font (size 1.27 1.27)) hide))
@@ -1007,7 +936,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR006")
+          (reference "#PWR005")
           (unit 1)
         )
       )
@@ -1059,7 +988,7 @@
     (on_board yes)
     (dnp no)
     (uuid e56047ca-618b-5b38-84d9-d6555856f54c)
-    (property "Reference" "#PWR007" (at 105.41 63.5 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR006" (at 105.41 63.5 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "VBAT" (at 101.6 63.5 90) (effects (font (size 1.27 1.27)) (justify right)))
     (property "Footprint" "" (at 105.41 63.5 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 105.41 63.5 0) (effects (font (size 1.27 1.27)) hide))
@@ -1067,7 +996,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR007")
+          (reference "#PWR006")
           (unit 1)
         )
       )
@@ -1161,7 +1090,7 @@
     (on_board yes)
     (dnp no)
     (uuid c5209040-9796-5fa5-babf-b0b0006e407c)
-    (property "Reference" "#PWR008" (at 195.58 96.52 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR007" (at 195.58 96.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 195.58 100.33 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 195.58 96.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 195.58 96.52 0) (effects (font (size 1.27 1.27)) hide))
@@ -1169,7 +1098,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR008")
+          (reference "#PWR007")
           (unit 1)
         )
       )
@@ -1188,7 +1117,7 @@
     (on_board yes)
     (dnp no)
     (uuid 7248ea55-f7a8-5d7f-b921-9354a6e8cf88)
-    (property "Reference" "#PWR009" (at 182.88 76.2 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR008" (at 182.88 76.2 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 179.07 76.2 270) (effects (font (size 1.27 1.27)) (justify right) hide))
     (property "Footprint" "" (at 182.88 76.2 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 182.88 76.2 0) (effects (font (size 1.27 1.27)) hide))
@@ -1196,7 +1125,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR009")
+          (reference "#PWR008")
           (unit 1)
         )
       )
@@ -1248,7 +1177,7 @@
     (on_board yes)
     (dnp no)
     (uuid 674b66e3-d233-5809-b88f-4f94f962115d)
-    (property "Reference" "#PWR010" (at 208.28 68.58 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR009" (at 208.28 68.58 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "+3V3" (at 212.09 68.58 270) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 208.28 68.58 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 208.28 68.58 0) (effects (font (size 1.27 1.27)) hide))
@@ -1256,7 +1185,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR010")
+          (reference "#PWR009")
           (unit 1)
         )
       )
@@ -1286,7 +1215,7 @@
     (on_board yes)
     (dnp no)
     (uuid c5209040-9796-5fa5-babf-b0b0006e407c)
-    (property "Reference" "#PWR011" (at 195.58 96.52 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR010" (at 195.58 96.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 195.58 100.33 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 195.58 96.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 195.58 96.52 0) (effects (font (size 1.27 1.27)) hide))
@@ -1294,7 +1223,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR011")
+          (reference "#PWR010")
           (unit 1)
         )
       )
@@ -1370,7 +1299,7 @@
     (on_board yes)
     (dnp no)
     (uuid 51a53fb3-0a7a-54f6-9c53-0892a4562da9)
-    (property "Reference" "#PWR012" (at 134.62 85.09 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR011" (at 134.62 85.09 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 134.62 88.9 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 134.62 85.09 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 134.62 85.09 0) (effects (font (size 1.27 1.27)) hide))
@@ -1378,7 +1307,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR012")
+          (reference "#PWR011")
           (unit 1)
         )
       )
@@ -1442,7 +1371,7 @@
     (on_board yes)
     (dnp no)
     (uuid a91ac662-1f65-59ca-8fa2-c5017b706bff)
-    (property "Reference" "#PWR013" (at 149.86 85.09 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR012" (at 149.86 85.09 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 149.86 88.9 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 149.86 85.09 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 149.86 85.09 0) (effects (font (size 1.27 1.27)) hide))
@@ -1450,7 +1379,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR013")
+          (reference "#PWR012")
           (unit 1)
         )
       )
@@ -1570,7 +1499,7 @@
     (on_board yes)
     (dnp no)
     (uuid a50de192-c8d5-57be-9161-0eaf3bd8926b)
-    (property "Reference" "#PWR014" (at 241.3 100.33 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR013" (at 241.3 100.33 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 241.3 104.14 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 241.3 100.33 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 241.3 100.33 0) (effects (font (size 1.27 1.27)) hide))
@@ -1578,7 +1507,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR014")
+          (reference "#PWR013")
           (unit 1)
         )
       )
@@ -1646,7 +1575,7 @@
     (on_board yes)
     (dnp no)
     (uuid f07a80f8-28f7-56fa-accf-53286f9ae91f)
-    (property "Reference" "#PWR015" (at 256.54 100.33 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR014" (at 256.54 100.33 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 256.54 104.14 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 256.54 100.33 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 256.54 100.33 0) (effects (font (size 1.27 1.27)) hide))
@@ -1654,7 +1583,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR015")
+          (reference "#PWR014")
           (unit 1)
         )
       )
@@ -1719,7 +1648,7 @@
     (on_board yes)
     (dnp no)
     (uuid 8ec963d1-d235-506d-9c5e-0aed6ecfcbbd)
-    (property "Reference" "#PWR016" (at 271.78 100.33 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR015" (at 271.78 100.33 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 271.78 104.14 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 271.78 100.33 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 271.78 100.33 0) (effects (font (size 1.27 1.27)) hide))
@@ -1727,7 +1656,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR016")
+          (reference "#PWR015")
           (unit 1)
         )
       )
@@ -1776,7 +1705,7 @@
     (on_board yes)
     (dnp no)
     (uuid 3a2b8aaf-a30c-556b-8582-79c396741917)
-    (property "Reference" "#PWR017" (at 241.3 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR016" (at 241.3 57.15 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "+3V3" (at 241.3 53.34 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 241.3 57.15 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 241.3 57.15 0) (effects (font (size 1.27 1.27)) hide))
@@ -1784,7 +1713,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR017")
+          (reference "#PWR016")
           (unit 1)
         )
       )
@@ -1803,7 +1732,7 @@
     (on_board yes)
     (dnp no)
     (uuid 9be20e11-35c2-5f97-8222-b9d1f65ef2f2)
-    (property "Reference" "#PWR018" (at 241.3 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR017" (at 241.3 69.85 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 241.3 73.66 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 241.3 69.85 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 241.3 69.85 0) (effects (font (size 1.27 1.27)) hide))
@@ -1811,7 +1740,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR018")
+          (reference "#PWR017")
           (unit 1)
         )
       )
@@ -1859,7 +1788,7 @@
     (on_board yes)
     (dnp no)
     (uuid 60b14acf-5f01-5f32-9fe8-bacd7cd672cb)
-    (property "Reference" "#PWR019" (at 256.54 57.15 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR018" (at 256.54 57.15 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "+3V3" (at 256.54 53.34 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 256.54 57.15 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 256.54 57.15 0) (effects (font (size 1.27 1.27)) hide))
@@ -1867,7 +1796,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR019")
+          (reference "#PWR018")
           (unit 1)
         )
       )
@@ -1886,7 +1815,7 @@
     (on_board yes)
     (dnp no)
     (uuid 564c39f4-6e75-52b3-9420-936c1051e45d)
-    (property "Reference" "#PWR020" (at 256.54 69.85 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR019" (at 256.54 69.85 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 256.54 73.66 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 256.54 69.85 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 256.54 69.85 0) (effects (font (size 1.27 1.27)) hide))
@@ -1894,7 +1823,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR020")
+          (reference "#PWR019")
           (unit 1)
         )
       )
@@ -1960,7 +1889,7 @@
     (on_board yes)
     (dnp no)
     (uuid ed269643-b95a-5d03-8417-bc155a227d57)
-    (property "Reference" "#PWR021" (at 317.5 60.96 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR020" (at 317.5 60.96 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "VBAT" (at 321.31 60.96 270) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 317.5 60.96 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 317.5 60.96 0) (effects (font (size 1.27 1.27)) hide))
@@ -1968,7 +1897,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR021")
+          (reference "#PWR020")
           (unit 1)
         )
       )
@@ -2031,7 +1960,7 @@
     (on_board yes)
     (dnp no)
     (uuid 0840bfe4-964e-5f7e-be49-855f24c5b030)
-    (property "Reference" "#PWR022" (at 294.64 82.55 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR021" (at 294.64 82.55 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "VBAT" (at 294.64 78.74 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 294.64 82.55 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 294.64 82.55 0) (effects (font (size 1.27 1.27)) hide))
@@ -2039,7 +1968,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR022")
+          (reference "#PWR021")
           (unit 1)
         )
       )
@@ -2118,7 +2047,7 @@
     (on_board yes)
     (dnp no)
     (uuid 0dc6ffff-8b47-537e-9c72-1fa680fcf220)
-    (property "Reference" "#PWR023" (at 340.36 104.14 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR022" (at 340.36 104.14 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 340.36 107.95 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 340.36 104.14 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 340.36 104.14 0) (effects (font (size 1.27 1.27)) hide))
@@ -2126,7 +2055,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR023")
+          (reference "#PWR022")
           (unit 1)
         )
       )
@@ -2215,7 +2144,7 @@
     (on_board yes)
     (dnp no)
     (uuid 7b9a74d2-e119-5284-a45e-90ebb365a63d)
-    (property "Reference" "#PWR024" (at 317.5 128.27 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR023" (at 317.5 128.27 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 317.5 132.08 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 317.5 128.27 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 317.5 128.27 0) (effects (font (size 1.27 1.27)) hide))
@@ -2223,7 +2152,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR024")
+          (reference "#PWR023")
           (unit 1)
         )
       )
@@ -2346,7 +2275,7 @@
     (on_board yes)
     (dnp no)
     (uuid 16596be3-1ae9-5865-9369-03403660477d)
-    (property "Reference" "#PWR025" (at 368.3 85.09 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR024" (at 368.3 85.09 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 368.3 88.9 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 368.3 85.09 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 368.3 85.09 0) (effects (font (size 1.27 1.27)) hide))
@@ -2354,7 +2283,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR025")
+          (reference "#PWR024")
           (unit 1)
         )
       )
@@ -2423,7 +2352,7 @@
     (on_board yes)
     (dnp no)
     (uuid 6f7c2c10-6caf-5d2c-9db4-f76aa21abe4b)
-    (property "Reference" "#PWR026" (at 383.54 85.09 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR025" (at 383.54 85.09 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 383.54 88.9 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 383.54 85.09 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 383.54 85.09 0) (effects (font (size 1.27 1.27)) hide))
@@ -2431,7 +2360,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR026")
+          (reference "#PWR025")
           (unit 1)
         )
       )
@@ -2505,7 +2434,7 @@
     (on_board yes)
     (dnp no)
     (uuid b7dfe378-c4e9-5261-a0c1-7d0bb4c8610a)
-    (property "Reference" "#PWR027" (at 317.5 167.64 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR026" (at 317.5 167.64 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "+3V3" (at 321.31 167.64 270) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "" (at 317.5 167.64 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 317.5 167.64 0) (effects (font (size 1.27 1.27)) hide))
@@ -2513,7 +2442,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR027")
+          (reference "#PWR026")
           (unit 1)
         )
       )
@@ -2532,7 +2461,7 @@
     (on_board yes)
     (dnp no)
     (uuid 12792990-4d84-59be-a291-27ce272fbc68)
-    (property "Reference" "#PWR028" (at 302.26 167.64 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR027" (at 302.26 167.64 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "VSENS" (at 298.45 167.64 90) (effects (font (size 1.27 1.27)) (justify right)))
     (property "Footprint" "" (at 302.26 167.64 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 302.26 167.64 0) (effects (font (size 1.27 1.27)) hide))
@@ -2540,7 +2469,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR028")
+          (reference "#PWR027")
           (unit 1)
         )
       )
@@ -2592,7 +2521,7 @@
     (on_board yes)
     (dnp no)
     (uuid 4de4c46a-1eb3-5a67-9c60-47dac207ba29)
-    (property "Reference" "#PWR029" (at 294.64 189.23 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR028" (at 294.64 189.23 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "+3V3" (at 294.64 185.42 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 294.64 189.23 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 294.64 189.23 0) (effects (font (size 1.27 1.27)) hide))
@@ -2600,7 +2529,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR029")
+          (reference "#PWR028")
           (unit 1)
         )
       )
@@ -2669,7 +2598,7 @@
     (on_board yes)
     (dnp no)
     (uuid c7ea161a-295e-55da-a90f-1e53debeecab)
-    (property "Reference" "#PWR030" (at 337.82 176.53 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR029" (at 337.82 176.53 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "VSENS" (at 337.82 172.72 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 337.82 176.53 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 337.82 176.53 0) (effects (font (size 1.27 1.27)) hide))
@@ -2677,7 +2606,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR030")
+          (reference "#PWR029")
           (unit 1)
         )
       )
@@ -2696,7 +2625,7 @@
     (on_board yes)
     (dnp no)
     (uuid 6cbb54ac-c5ca-51f9-a58d-8aa6d5fa7819)
-    (property "Reference" "#PWR031" (at 337.82 189.23 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR030" (at 337.82 189.23 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 337.82 193.04 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 337.82 189.23 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 337.82 189.23 0) (effects (font (size 1.27 1.27)) hide))
@@ -2704,7 +2633,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR031")
+          (reference "#PWR030")
           (unit 1)
         )
       )
@@ -2745,7 +2674,7 @@
     (on_board yes)
     (dnp no)
     (uuid 1366f4fb-06cb-5fcf-8aed-4c5d173654bc)
-    (property "Reference" "#PWR032" (at 40.64 223.52 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR031" (at 40.64 223.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "GND" (at 40.64 227.33 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 40.64 223.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 40.64 223.52 0) (effects (font (size 1.27 1.27)) hide))
@@ -2753,7 +2682,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR032")
+          (reference "#PWR031")
           (unit 1)
         )
       )
@@ -2794,7 +2723,7 @@
     (on_board yes)
     (dnp no)
     (uuid 8a05357a-5d88-5a53-897a-0de5de031a93)
-    (property "Reference" "#PWR033" (at 55.88 223.52 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR032" (at 55.88 223.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "VBAT" (at 55.88 227.33 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 55.88 223.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 55.88 223.52 0) (effects (font (size 1.27 1.27)) hide))
@@ -2802,7 +2731,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR033")
+          (reference "#PWR032")
           (unit 1)
         )
       )
@@ -2843,7 +2772,7 @@
     (on_board yes)
     (dnp no)
     (uuid 49e66c2f-1172-56ea-9c30-e61249bf59f0)
-    (property "Reference" "#PWR034" (at 71.12 223.52 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Reference" "#PWR033" (at 71.12 223.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Value" "VSENS" (at 71.12 227.33 0) (effects (font (size 1.27 1.27))))
     (property "Footprint" "" (at 71.12 223.52 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 71.12 223.52 0) (effects (font (size 1.27 1.27)) hide))
@@ -2851,7 +2780,7 @@
     (instances
       (project "h2-soil-sensor"
         (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a/34766830-07fa-559c-9e50-b872c83adfda"
-          (reference "#PWR034")
+          (reference "#PWR033")
           (unit 1)
         )
       )
@@ -2895,7 +2824,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 1a74ff68-1493-5453-a1b1-9dae7dfd7958)
   )
-  (text "1) PIN + CHONG NGUOC CUC\nPin CR123A (gia co day) noi vao J2 (JST-PH 2P) HOAC han\nvao 2 pad J3. Q1 P-MOSFET: D->pin(+), S->tai, G->GND qua R1.\nLap nguoc pin: Vgs=0 -> khong co dong. R10 0R: cau do dong."
+  (text "1) PIN + CHONG NGUOC CUC\nDay cua de pin CR123A han vao 2 pad J3 (+ vuong, - tron).\nQ1 P-MOSFET: D->pin(+), S->tai, G->GND qua R1.\nLap nguoc pin: Vgs=0 -> khong co dong. R10 0R: cau do dong."
     (at 20.32 27.94 0)
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid 16ab6037-b6dc-5d19-ba2e-d69f30d89e70)
@@ -2910,7 +2839,7 @@
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid d6747e0e-19d1-5bae-b282-f5cd4ff982e3)
   )
-  (text "4) CONG TAC NGUON MODULE CAM BIEN VSENS\nSENS_PWR_EN_N=0 -> Q4 ON: cap 3.3V cho module dat,\nmodule I2C, NTC, pull-up I2C. R9 giu Q4 OFF khi\nGPIO Hi-Z (sleep/reset). Module chi duoc cap nguon khi do."
+  (text "4) CONG TAC NGUON MODULE DO AM DAT (VSENS)\nSENS_PWR_EN_N=0 -> Q4 ON: cap 3.3V cho module.\nFirmware bat mem (pull-down noi ~1ms) de han dong nap tu.\nR9 giu Q4 OFF khi GPIO Hi-Z (sleep/reset)."
     (at 284.48 144.78 0)
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid 2e608638-1440-51e6-9b69-9e7419b223e5)

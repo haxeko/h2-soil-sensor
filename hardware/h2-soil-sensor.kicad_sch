@@ -96,12 +96,12 @@
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid 17349991-11af-5e1c-acf1-bb6741a80fb1)
   )
-  (text "SO DO KHOI v2 - Bo mach ESP32-H2 + nguon pin, cam bien la module co san (Matter over Thread)"
+  (text "SO DO KHOI v3 - ESP32-H2 + pin CR123A + module do am dat dien dung (Matter over Thread)"
     (at 25.4 22.86 0)
     (effects (font (size 2.54 2.54)) (justify left bottom))
     (uuid d3d5851d-af89-575d-8517-93ef6f06aec5)
   )
-  (text_box "CR123A 3.0V\nLi-MnO2 ~1500mAh\n(gia pin co day)\nJ2 JST-PH 2P / J3 pad"
+  (text_box "CR123A 3.0V\nLi-MnO2 ~1500mAh\n(de pin co day)\nJ3: 2 pad han + / -"
     (at 25.4 33.02 0)
     (size 33.02 20.32)
     (stroke (width 0.3) (type default))
@@ -125,7 +125,7 @@
     (effects (font (size 1.524 1.524) bold) (justify left top))
     (uuid c234fa2c-d76d-5011-a277-4a7e56043f97)
   )
-  (text_box "ESP32-H2-WROOM-02C\nRISC-V 96MHz, 802.15.4 + BLE\nMatter over Thread\nSED / ICD (SIT/LIT)\n\nIO1  ADC1_CH0  SOIL_ADC\nIO2  ADC1_CH1  VBAT_ADC\nIO3  ADC1_CH2  NTC_ADC\nIO10 SENS_PWR_EN_N\nIO11 VBAT_MEAS_EN\nIO12/IO22 I2C SDA/SCL\nIO9  nut BOOT/USER\nIO0  LED\nIO23/24 UART0, IO26/27 USB"
+  (text_box "ESP32-H2-WROOM-02C\nRISC-V 96MHz, 802.15.4 + BLE\nMatter over Thread\nSED / ICD (SIT/LIT)\n\nIO1  ADC1_CH0  SOIL_ADC\nIO2  ADC1_CH1  VBAT_ADC\nIO10 SENS_PWR_EN_N\nIO11 VBAT_MEAS_EN\nIO9  nut BOOT/USER\nIO0  LED\nIO23/24 UART0, IO26/27 USB"
     (at 195.58 33.02 0)
     (size 63.5 71.12)
     (stroke (width 0.3) (type default))
@@ -149,7 +149,7 @@
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid 886f9a3d-5859-59d5-8075-4a4579817a3e)
   )
-  (text_box "J4 PH2.0-3P ->\nMODULE DO AM DAT DIEN DUNG\nv1.2/v2.0 (TLC555), AOUT 0-3V\n(cam vao dat, day ~1m)"
+  (text_box "J4 PH2.0-3P ->\nMODULE DO AM DAT DIEN DUNG\nCapacitive Soil Moisture v1.2\n(TLC555), AOUT 0-3V, ~5mA"
     (at 25.4 124.46 0)
     (size 50.8 20.32)
     (stroke (width 0.3) (type default))
@@ -157,23 +157,7 @@
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid a2d12cd1-8fc8-53bf-bae0-6f334c206160)
   )
-  (text_box "J6 1x4 2.54mm ->\nMODULE I2C NHIET/AM KHONG KHI\nSHT4x / SHT3x / AHT20\n(GY-xxx, Adafruit...)"
-    (at 86.36 124.46 0)
-    (size 50.8 20.32)
-    (stroke (width 0.3) (type default))
-    (fill (type none))
-    (effects (font (size 1.524 1.524)) (justify left top))
-    (uuid 4404653c-5668-51e2-9a2c-078f379ebffa)
-  )
-  (text_box "J7 PH2.0-2P ->\nDAU DO NTC 10k\nchong nuoc (tuy chon)\n-> nhiet do dat"
-    (at 147.32 124.46 0)
-    (size 43.18 20.32)
-    (stroke (width 0.3) (type default))
-    (fill (type none))
-    (effects (font (size 1.524 1.524)) (justify left top))
-    (uuid 9ce01cc0-dc9a-5ac9-8dd5-21f339442833)
-  )
-  (text_box "U3 SRV05-4: TVS cho 4 day ra ngoai hop"
+  (text_box "D3 TVS: chong ESD day AOUT"
     (at 86.36 152.4 0)
     (size 50.8 10.16)
     (stroke (width 0.3) (type default))
@@ -181,7 +165,7 @@
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid e1b1e5ba-d906-5bca-bbfb-314e490382ee)
   )
-  (text_box "UI / nap:\nSW1 BOOT/USER (IO9)\nLED do (IO0)\nJ1: UART0 + USB-JTAG"
+  (text_box "UI / nap:\nSW1 BOOT/USER (IO9)\nLED do (IO0)\nJ1: 8 pad tron (UART+USB)"
     (at 274.32 33.02 0)
     (size 50.8 25.4)
     (stroke (width 0.3) (type default))
@@ -308,26 +292,6 @@
     (uuid c054c1b3-6c4e-541c-a75e-11c22924e604)
   )
   (polyline
-    (pts (xy 111.76 116.84) (xy 111.76 124.46))
-    (stroke (width 0.3) (type default))
-    (uuid 3d98c247-2019-5ee0-9d63-83ed0bd28f7f)
-  )
-  (polyline
-    (pts (xy 110.86 122.96) (xy 111.76 124.46) (xy 112.66 122.96))
-    (stroke (width 0.3) (type default))
-    (uuid 47cda567-e538-5faa-801d-53b237dba6ff)
-  )
-  (polyline
-    (pts (xy 167.64 116.84) (xy 167.64 124.46))
-    (stroke (width 0.3) (type default))
-    (uuid d81a0840-7fe3-5dde-8125-baca5b4259a6)
-  )
-  (polyline
-    (pts (xy 166.74 122.96) (xy 167.64 124.46) (xy 168.54 122.96))
-    (stroke (width 0.3) (type default))
-    (uuid ba00ed95-82b3-5d0e-a70c-b58c33ba8161)
-  )
-  (polyline
     (pts (xy 50.8 144.78) (xy 50.8 170.18) (xy 193.04 170.18) (xy 193.04 88.9) (xy 195.58 88.9))
     (stroke (width 0.3) (type default))
     (uuid 5993f093-f20f-542f-918c-f2a6c20fa9c4)
@@ -336,26 +300,6 @@
     (pts (xy 194.08 88) (xy 195.58 88.9) (xy 194.08 89.8))
     (stroke (width 0.3) (type default))
     (uuid 7e846fda-ebb9-57b9-918b-dd98e9f478a1)
-  )
-  (polyline
-    (pts (xy 167.64 144.78) (xy 167.64 165.1) (xy 190.5 165.1) (xy 190.5 93.98) (xy 195.58 93.98))
-    (stroke (width 0.3) (type default))
-    (uuid 9c454a5c-5d30-5d32-ad53-ce82a00553df)
-  )
-  (polyline
-    (pts (xy 194.08 93.08) (xy 195.58 93.98) (xy 194.08 94.88))
-    (stroke (width 0.3) (type default))
-    (uuid c6d2934a-b674-54fb-b3c2-1fab4e177ec3)
-  )
-  (polyline
-    (pts (xy 137.16 134.62) (xy 187.96 134.62) (xy 187.96 96.52) (xy 195.58 96.52))
-    (stroke (width 0.3) (type default))
-    (uuid bea7ec95-ddb2-54cc-a500-6cbbe332c017)
-  )
-  (polyline
-    (pts (xy 194.08 95.62) (xy 195.58 96.52) (xy 194.08 97.42))
-    (stroke (width 0.3) (type default))
-    (uuid e8086a9b-477b-522a-8538-86c241e76870)
   )
   (polyline
     (pts (xy 259.08 45.72) (xy 274.32 45.72))
@@ -377,7 +321,7 @@
     (stroke (width 0.3) (type default))
     (uuid 550784c8-e3d8-51ce-bb4d-e0621131db47)
   )
-  (text "SOIL_ADC / NTC_ADC / I2C"
+  (text "SOIL_ADC"
     (at 165.1 175.26 0)
     (effects (font (size 1.27 1.27)))
     (uuid 8c799d0f-dd3e-5b8e-b095-381c134b1ce1)

@@ -165,6 +165,22 @@ def soil_probe():
     return f
 
 
+def prog_pads():
+    """2 x 4 round SMD test pads, 2.54 mm grid (pogo-pin jig or soldered wires), no paste.
+    Pin numbering as Conn_02x04_Odd_Even: odd pins in column 0, even pins in column 1."""
+    f = FP("ProgPads_2x04_P2.54mm_D1.5mm",
+           "Programming pads 2x4, 2.54 mm pitch, 1.5 mm round SMD pads without solder paste (pogo pins / wires)",
+           "test pad pogo programming", ["smd", "exclude_from_pos_files", "exclude_from_bom"])
+    f.text("reference", "REF**", 1.27, -1.8, "F.SilkS", 0.8)
+    f.text("value", "PROG", 1.27, 9.4, "F.Fab", 0.8)
+    for n in range(8):
+        f.smd(str(n + 1), 2.54 * (n % 2), 2.54 * (n // 2), 1.5, 1.5, layers=("F.Cu", "F.Mask"), shape="circle")
+    f.rect(-0.9, -0.9, 3.44, 8.52, "F.Fab", 0.1)
+    f.rect(-1.05, -1.05, 3.59, 8.67, "F.CrtYd", 0.05)
+    f.line(-1.2, -0.3, -1.2, 0.3, "F.SilkS", 0.15)      # pin-1 mark
+    return f
+
+
 def wson10_tps63900():
     """KiCad WSON-10-1EP_2.5x2.5mm_P0.5mm_EP1.2x2mm_ThermalVias with 0.3 mm thermal-via drills (std PCB process)."""
     import re as _re
@@ -182,8 +198,8 @@ def main(hw):
     os.makedirs(pretty, exist_ok=True)
     for old in ("BatteryHolder_MYOUNG_BH-123A-A1CJ002.kicad_mod", "SoilProbe_Capacitive_80mm.kicad_mod"):
         if os.path.exists(os.path.join(pretty, old)):
-            os.remove(os.path.join(pretty, old))   # v1 parts, not used by the v2 carrier board
-    for f in (esp32_h2_wroom_02c(),):
+            os.remove(os.path.join(pretty, old))   # v1 parts, not used any more
+    for f in (esp32_h2_wroom_02c(), prog_pads()):
         f.write(pretty)
     with open(os.path.join(pretty, "WSON-10-1EP_2.5x2.5mm_P0.5mm_EP1.2x2mm_ThermalVias_0.3mm.kicad_mod"), "w") as fh:
         fh.write(wson10_tps63900())

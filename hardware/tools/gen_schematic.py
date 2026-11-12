@@ -265,7 +265,7 @@ class Sheet:
 
 def main(outdir):
     os.makedirs(outdir, exist_ok=True)
-    rev, date = "2.0", "2026-11-12"
+    rev, date = "3.0", "2026-11-12"
     # nets per sheet -> global nets
     sheets_of_net: dict[str, set] = {}
     for c in design.COMPONENTS:

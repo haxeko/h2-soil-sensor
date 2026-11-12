@@ -284,10 +284,6 @@
       },
       {
         "netclass": "Analog",
-        "pattern": "NTC_ADC"
-      },
-      {
-        "netclass": "Analog",
         "pattern": "VBAT_ADC"
       }
     ]
