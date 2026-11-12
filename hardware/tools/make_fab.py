@@ -84,7 +84,7 @@ def bom_and_cpl():
     # ---- CPL
     raw = os.path.join(FAB, "pos_raw.csv")
     run("kicad-cli", "pcb", "export", "pos", "--side", "front", "--format", "csv", "--units", "mm",
-        "--exclude-fp-th", "-o", raw, PCB)
+        "-o", raw, PCB)
     cpl = os.path.join(FAB, "h2-soil-sensor_CPL_JLCPCB.csv")
     keep = {r for refs in groups.values() for r in refs}
     with open(raw) as fi, open(cpl, "w", newline="") as fo:

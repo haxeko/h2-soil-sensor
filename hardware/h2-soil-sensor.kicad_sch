@@ -5,8 +5,8 @@
   (paper "A3")
   (title_block
     (title "H2 Soil Sensor - Matter over Thread (ESP32-H2, CR123A)")
-    (date "2026-11-11")
-    (rev "1.0")
+    (date "2026-11-12")
+    (rev "2.0")
     (company "H2 Soil Sensor")
     (comment 1 "Root sheet: so do khoi + 4 sheet con (ket noi bang global label)")
   )

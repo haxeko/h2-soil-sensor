@@ -148,7 +148,7 @@ esp_err_t air_sensor_measure(int sda_gpio, int scl_gpio, float *temp_c, float *r
         if (i2c_master_probe(bus, cand[i].addr, I2C_TIMEOUT_MS) != ESP_OK) {
             continue;
         }
-        float t, rh;
+        float t = 0.0f, rh = 0.0f;
         err = read_type(bus, cand[i].type, cand[i].addr, &t, &rh);
         if (err == ESP_OK && t > -40.0f && t < 125.0f) {
             if (s_type != cand[i].type) {

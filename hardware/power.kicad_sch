@@ -5,8 +5,8 @@
   (paper "A3")
   (title_block
     (title "Power: CR123A, RPP, TPS63900 3V3, VBAT sense, VSENS")
-    (date "2026-11-11")
-    (rev "1.0")
+    (date "2026-11-12")
+    (rev "2.0")
     (company "H2 Soil Sensor - Matter over Thread")
     (comment 1 "ESP32-H2-WROOM-02C, CR123A, TPS63900")
   )
