@@ -3,12 +3,9 @@
  *
  *  EP0  Root Node (+ ICD Management) + Power Source device type
  *       Power Source: Battery + Replaceable, BatVoltage, BatPercentRemaining, BatChargeLevel
- *  EP1  Soil Sensor (0x0045, Matter 1.5): Identify, Soil Measurement (0x0430),
- *       Temperature Measurement (soil NTC, optional cluster of the device type)
+ *  EP1  Soil Sensor (0x0045, Matter 1.5): Identify, Soil Measurement (0x0430)
  *  EP2  Humidity Sensor (0x0307): soil moisture mirrored as %RH for ecosystems
  *       that do not support the Soil Sensor device type yet (Apple Home, Google Home)
- *  EP3  Temperature Sensor (0x0302): air temperature, I2C module    (optional)
- *  EP4  Humidity Sensor (0x0307): air relative humidity, I2C module (optional)
  */
 #pragma once
 
@@ -18,8 +15,7 @@
 #include "esp_err.h"
 #include "sensors.h"
 
-/* node + endpoints, before esp_matter::start(); `first` = boot measurement (optional endpoints) */
-esp_err_t app_matter_init(const sensor_readings_t *first);
+esp_err_t app_matter_init(void);          /* node + endpoints, before esp_matter::start() */
 esp_err_t app_matter_start(void);         /* esp_matter::start() + post-start configuration */
 
 /** Push readings into the data model, respecting change thresholds / max interval. */

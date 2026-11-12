@@ -38,14 +38,16 @@ esp_err_t board_init(void)
      * keep both pins Hi-Z so the resistors define the state, also in light/deep sleep. */
     pin_hiz(BOARD_GPIO_SENS_PWR_EN_N);
     pin_hiz(BOARD_GPIO_VBAT_MEAS_EN);
-    board_i2c_release();
     /* LED: output low (off). IO0 is a digital pin, it floats in light sleep -> LED stays off. */
     pin_out(BOARD_GPIO_LED, 0);
     /* unused / analog pins: disable input buffers to avoid shoot-through current */
     pin_hiz(BOARD_GPIO_SOIL_ADC);
     pin_hiz(BOARD_GPIO_VBAT_ADC);
-    pin_hiz(BOARD_GPIO_NTC_ADC);
-    pin_hiz(4);   /* IO4 spare */
+    /* unused module pins (no connection on the v3 board) */
+    static const int unused[] = {3, 4, 12, 13, 14, 22};
+    for (int i = 0; i < (int)(sizeof(unused) / sizeof(unused[0])); i++) {
+        pin_hiz(unused[i]);
+    }
     pin_hiz(5);   /* IO5 spare */
     pin_hiz(25);  /* IO25 spare (JTAG strap, ignored with default eFuses) */
     ESP_LOGI(TAG, "board GPIO initialised");
@@ -84,16 +86,6 @@ void board_vbat_divider(bool on)
         pin_out(BOARD_GPIO_VBAT_MEAS_EN, 0);
         pin_hiz(BOARD_GPIO_VBAT_MEAS_EN);
     }
-}
-
-void board_i2c_release(void)
-{
-    /* SDA/SCL pull-ups sit on VSENS: with VSENS off an internal pull-up would back-feed
-     * the rail through R19/R20, so the pins must be inputs without pulls. */
-    gpio_reset_pin(BOARD_GPIO_I2C_SDA);   /* note: gpio_reset_pin() enables the pull-up ... */
-    gpio_reset_pin(BOARD_GPIO_I2C_SCL);
-    pin_hiz(BOARD_GPIO_I2C_SDA);          /* ... so disable everything afterwards */
-    pin_hiz(BOARD_GPIO_I2C_SCL);
 }
 
 void board_hold_power_pins(bool hold)

@@ -22,16 +22,6 @@ menu "H2 Soil Sensor"
             range 0 50
             default 2
 
-        config TEMP_REPORT_DELTA_CENTI
-            int "Temperature report threshold (0.01 degC)"
-            range 0 1000
-            default 30
-
-        config RH_REPORT_DELTA_CENTI
-            int "Air humidity report threshold (0.01 %RH)"
-            range 0 2000
-            default 200
-
         config VBAT_REPORT_DELTA_MV
             int "Battery voltage report threshold (mV)"
             range 0 500
@@ -62,70 +52,17 @@ menu "H2 Soil Sensor"
             int "Default DRY point (mV at AOUT, module in air)"
             default 2500
             help
-                Typical capacitive modules at 3.3 V give ~2.4-2.8 V in air and ~1.0-1.4 V in
-                water. Calibrate every module with the button (double click = dry,
+                The capacitive module v1.2 at 3.3 V typically gives ~2.2-2.8 V in air and
+                ~1.0-1.4 V in water. Calibrate every module with the button (double click = dry,
                 triple click = wet); the values are stored in NVS.
 
         config SOIL_CAL_WET_MV_DEFAULT
             int "Default WET point (mV at AOUT, module in water)"
             default 1200
 
-        config SOIL_TEMP_COMP_UV_PER_C
-            int "Soil reading temperature coefficient (uV/degC at AOUT, 0 = off)"
-            range -20000 20000
-            default 0
-            help
-                Optional first-order temperature compensation using the NTC probe:
-                v_corr = v - k * (T - 25 degC). Measure k for your module in a pot of soil
-                (e.g. fridge vs. room temperature) before enabling it.
     endmenu
 
     menu "Hardware options"
-        config SOIL_ENABLE_NTC
-            bool "Soil temperature: 10k NTC probe on J7"
-            default y
-            help
-                Waterproof 10k NTC probe (2 wires, any polarity). If it is not plugged in at
-                power-up, the temperature cluster is not created (see SOIL_OPTIONAL_EP_AUTO).
-
-        config NTC_R25_OHM
-            int "NTC resistance at 25 degC (ohm)"
-            depends on SOIL_ENABLE_NTC
-            default 10000
-
-        config NTC_BETA
-            int "NTC beta constant B25/50 (K)"
-            depends on SOIL_ENABLE_NTC
-            default 3950
-
-        choice SOIL_AIR_SENSOR
-            prompt "Air temperature/humidity module on J6 (I2C)"
-            default SOIL_AIR_SENSOR_AUTO
-            config SOIL_AIR_SENSOR_AUTO
-                bool "Auto-detect (AHT20 0x38, SHT4x 0x44, SHT3x 0x44/0x45)"
-            config SOIL_AIR_SENSOR_SHT4X
-                bool "Sensirion SHT40/SHT41/SHT45 module"
-            config SOIL_AIR_SENSOR_SHT3X
-                bool "Sensirion SHT30/SHT31/SHT35 module (GY-SHT31-D ...)"
-            config SOIL_AIR_SENSOR_AHT20
-                bool "Aosong AHT20/AHT21 module"
-            config SOIL_AIR_SENSOR_NONE
-                bool "None"
-        endchoice
-
-        config SOIL_AIR_SENSOR_ENABLED
-            bool
-            default n if SOIL_AIR_SENSOR_NONE
-            default y
-
-        config SOIL_OPTIONAL_EP_AUTO
-            bool "Create NTC / air endpoints only for sensors found at power-up"
-            default y
-            help
-                The first measurement runs before the Matter data model is built. Sensors that
-                do not answer then get no endpoint/cluster, so the controller shows no empty
-                tiles. Plug the modules in before powering the device (re-commission if the
-                set of sensors changes later).
 
         config SOIL_ENABLE_RH_MIRROR
             bool "Expose soil moisture also as a Humidity Sensor endpoint (Apple/Google compatibility)"
@@ -142,10 +79,6 @@ menu "H2 Soil Sensor"
         config VBAT_DIVIDER_RATIO_X1000
             int "Battery divider ratio x1000 (R7+R8)/R8"
             default 2000
-
-        config NTC_SUPPLY_MV
-            int "NTC divider supply voltage (VSENS, mV)"
-            default 3300
 
         config VBAT_SHUTDOWN_MV
             int "Battery cut-off: below this the device shuts down (mV, 0 = never)"
@@ -167,21 +100,12 @@ menu "H2 Soil Sensor"
         config GPIO_VBAT_ADC
             int "VBAT_ADC (ADC1)"
             default 2
-        config GPIO_NTC_ADC
-            int "NTC_ADC (ADC1)"
-            default 3
         config GPIO_SENS_PWR_EN_N
             int "SENS_PWR_EN_N (low = VSENS on)"
             default 10
         config GPIO_VBAT_MEAS_EN
             int "VBAT_MEAS_EN (high = divider on)"
             default 11
-        config GPIO_I2C_SDA
-            int "I2C SDA"
-            default 12
-        config GPIO_I2C_SCL
-            int "I2C SCL"
-            default 22
         config GPIO_LED
             int "Status LED (active high)"
             default 0

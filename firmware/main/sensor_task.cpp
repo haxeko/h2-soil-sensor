@@ -44,7 +44,7 @@ static void task(void *arg)
         if ((req & SENSOR_REQ_CAL_DRY) || (req & SENSOR_REQ_CAL_WET)) {
             bool dry = (req & SENSOR_REQ_CAL_DRY) != 0;
             esp_err_t e = ESP_ERR_INVALID_STATE;
-            if (r.soil_mv_raw > 0) {
+            if (r.soil_mv > 0) {
                 e = dry ? calibration_set_dry(r.soil_mv) : calibration_set_wet(r.soil_mv);
             }
             const soil_settings_t *cs = calibration_get();
@@ -54,7 +54,7 @@ static void task(void *arg)
             ESP_LOGI(TAG, "calibration %s at %d mV: %s (dry=%ld wet=%ld)", dry ? "DRY" : "WET", r.soil_mv,
                      esp_err_to_name(e), (long)cs->dry_mv, (long)cs->wet_mv);
             float pct = sensors_soil_percent(r.soil_mv);
-            r.soil_valid = r.soil_mv_raw > 0 && !std::isnan(pct);
+            r.soil_valid = r.soil_mv > 0 && !std::isnan(pct);
             r.soil_pct = r.soil_valid ? pct : 0.0f;
         }
 

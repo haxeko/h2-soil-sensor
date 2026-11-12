@@ -46,9 +46,6 @@ using chip::app::DataModel::Nullable;
 static constexpr uint16_t kInvalidEp = 0xFFFF;
 static uint16_t s_ep_soil = kInvalidEp;
 static uint16_t s_ep_soil_rh = kInvalidEp;
-static uint16_t s_ep_air_t = kInvalidEp;
-static uint16_t s_ep_air_rh = kInvalidEp;
-static bool s_has_ntc, s_has_air;   /* optional sensors present at boot */
 static constexpr uint16_t kEpRoot = 0;
 
 /* Soil Measurement limits: 0..100 %, one accuracy range (+/-5 % absolute, after calibration).
@@ -152,14 +149,8 @@ static void add_power_source(node_t *node)
                                                                    nullable<uint8_t>(200));
 }
 
-esp_err_t app_matter_init(const sensor_readings_t *first)
+esp_err_t app_matter_init(void)
 {
-#if CONFIG_SOIL_OPTIONAL_EP_AUTO
-    s_has_ntc = first && first->soil_temp_valid;
-    s_has_air = first && first->air_valid;
-#else
-    s_has_ntc = s_has_air = true;
-#endif
     node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);
     if (!node) {
@@ -187,14 +178,6 @@ esp_err_t app_matter_init(const sensor_readings_t *first)
     limits.accuracyRanges = chip::app::DataModel::List<const Globals::Structs::MeasurementAccuracyRangeStruct::Type>(
         s_soil_ranges, 1);
     SoilMeasurement::SetSoilMoistureLimits(s_ep_soil, limits);   /* must precede esp_matter::start() */
-#if CONFIG_SOIL_ENABLE_NTC
-    if (s_has_ntc) {
-    cluster::temperature_measurement::config_t st;
-    st.min_measured_value = nullable<int16_t>(-4000);
-    st.max_measured_value = nullable<int16_t>(8500);
-    cluster::temperature_measurement::create(ep, &st, CLUSTER_FLAG_SERVER);
-    }
-#endif
 
 #if CONFIG_SOIL_ENABLE_RH_MIRROR
     /* EP2: soil moisture as relative humidity (compatibility) */
@@ -205,21 +188,6 @@ esp_err_t app_matter_init(const sensor_readings_t *first)
     s_ep_soil_rh = ep2 ? endpoint::get_id(ep2) : kInvalidEp;
 #endif
 
-#if CONFIG_SOIL_AIR_SENSOR_ENABLED
-    /* EP3/EP4: air temperature + humidity from the I2C module (SHT4x / SHT3x / AHT20) */
-    if (s_has_air) {
-    endpoint::temperature_sensor::config_t at;
-    at.temperature_measurement.min_measured_value = nullable<int16_t>(-4000);
-    at.temperature_measurement.max_measured_value = nullable<int16_t>(12500);
-    endpoint_t *ep3 = endpoint::temperature_sensor::create(node, &at, ENDPOINT_FLAG_NONE, nullptr);
-    s_ep_air_t = ep3 ? endpoint::get_id(ep3) : kInvalidEp;
-    endpoint::humidity_sensor::config_t ah;
-    ah.relative_humidity_measurement.min_measured_value = nullable<uint16_t>(0);
-    ah.relative_humidity_measurement.max_measured_value = nullable<uint16_t>(10000);
-    endpoint_t *ep4 = endpoint::humidity_sensor::create(node, &ah, ENDPOINT_FLAG_NONE, nullptr);
-    s_ep_air_rh = ep4 ? endpoint::get_id(ep4) : kInvalidEp;
-    }
-#endif
 
     add_power_source(node);
 
@@ -231,8 +199,7 @@ esp_err_t app_matter_init(const sensor_readings_t *first)
     };
     set_openthread_platform_config(&config);
 #endif
-    ESP_LOGI(TAG, "endpoints: soil=%u (NTC %d) soilRH=%u airT=%u airRH=%u", s_ep_soil, s_has_ntc, s_ep_soil_rh,
-             s_ep_air_t, s_ep_air_rh);
+    ESP_LOGI(TAG, "endpoints: soil=%u soilRH=%u", s_ep_soil, s_ep_soil_rh);
     return ESP_OK;
 }
 
@@ -244,10 +211,10 @@ esp_err_t app_matter_start(void)
         return err;
     }
     /* Power Source EndpointList: the battery powers every endpoint of the node */
-    static chip::EndpointId s_powered[5];
+    static chip::EndpointId s_powered[3];
     size_t n = 0;
     s_powered[n++] = kEpRoot;
-    for (uint16_t e : {s_ep_soil, s_ep_soil_rh, s_ep_air_t, s_ep_air_rh}) {
+    for (uint16_t e : {s_ep_soil, s_ep_soil_rh}) {
         if (e != kInvalidEp) {
             s_powered[n++] = e;
         }
@@ -266,7 +233,7 @@ typedef struct {
     int64_t t_us;
 } last_t;
 
-static last_t s_last_soil, s_last_soil_t, s_last_air_t, s_last_air_rh, s_last_vbat;
+static last_t s_last_soil, s_last_vbat;
 
 /** Threshold / max-interval gate. Returns 0 = skip, 1 = value changed, 2 = heartbeat (unchanged). */
 static int gate(last_t &l, int32_t v, int32_t delta, int64_t now, bool force)
@@ -313,36 +280,6 @@ void app_matter_publish(const sensor_readings_t *r, bool force)
             }
         }
     }
-#if CONFIG_SOIL_ENABLE_NTC
-    if (r->soil_temp_valid && s_has_ntc) {
-        int32_t t = (int32_t)lroundf(r->soil_temp_c * 100.0f);
-        int g = gate(s_last_soil_t, t, CONFIG_TEMP_REPORT_DELTA_CENTI, now, force);
-        if (g == 1) {
-            LOG_ON_CHIP_ERR(TemperatureMeasurement::SetMeasuredValue(s_ep_soil, Nullable<int16_t>((int16_t)t)));
-        } else if (g == 2) {
-            heartbeat(s_ep_soil, TemperatureMeasurement::Id, TemperatureMeasurement::Attributes::MeasuredValue::Id);
-        }
-    }
-#endif
-#if CONFIG_SOIL_AIR_SENSOR_ENABLED
-    if (r->air_valid && s_ep_air_t != kInvalidEp) {
-        int32_t t = (int32_t)lroundf(r->air_temp_c * 100.0f);
-        int g = gate(s_last_air_t, t, CONFIG_TEMP_REPORT_DELTA_CENTI, now, force);
-        if (g == 1) {
-            LOG_ON_CHIP_ERR(TemperatureMeasurement::SetMeasuredValue(s_ep_air_t, Nullable<int16_t>((int16_t)t)));
-        } else if (g == 2) {
-            heartbeat(s_ep_air_t, TemperatureMeasurement::Id, TemperatureMeasurement::Attributes::MeasuredValue::Id);
-        }
-        int32_t h = (int32_t)lroundf(r->air_rh_pct * 100.0f);
-        g = gate(s_last_air_rh, h, CONFIG_RH_REPORT_DELTA_CENTI, now, force);
-        if (g == 1) {
-            LOG_ON_CHIP_ERR(RelativeHumidityMeasurement::SetMeasuredValue(s_ep_air_rh, Nullable<uint16_t>((uint16_t)h)));
-        } else if (g == 2) {
-            heartbeat(s_ep_air_rh, RelativeHumidityMeasurement::Id,
-                      RelativeHumidityMeasurement::Attributes::MeasuredValue::Id);
-        }
-    }
-#endif
     if (r->vbat_valid) {
         int g = gate(s_last_vbat, r->vbat_mv, CONFIG_VBAT_REPORT_DELTA_MV, now, force);
         if (g == 1) {

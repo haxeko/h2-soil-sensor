@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "air_sensor.h"
 #include "battery.h"
 #include "board.h"
 #include "calibration.h"
@@ -86,18 +85,6 @@ static int adc_read_mv(adc_oneshot_unit_handle_t unit, adc_in_t *in, int n)
 }
 
 /* ------------------------------------------------------------------ conversions */
-static float ntc_temp_c(int mv)
-{
-    /* VSENS -- R18 10k -- NTC_ADC -- NTC probe (CONFIG_NTC_R25_OHM, beta CONFIG_NTC_BETA) -- GND */
-    const float vs = (float)CONFIG_NTC_SUPPLY_MV;
-    if (mv < 30 || mv > vs - 30) {
-        return NAN;   /* probe not connected (open -> ~VSENS) or shorted */
-    }
-    float r = 10000.0f * (float)mv / (vs - (float)mv);
-    float inv_t = 1.0f / 298.15f + logf(r / (float)CONFIG_NTC_R25_OHM) / (float)CONFIG_NTC_BETA;
-    return 1.0f / inv_t - 273.15f;
-}
-
 float sensors_soil_percent(int soil_mv)
 {
     int dry = calibration_get()->dry_mv;
@@ -135,18 +122,6 @@ esp_err_t sensors_measure(sensor_readings_t *r)
     board_sensor_power(true);
     int64_t t_on = esp_timer_get_time();
 
-#if CONFIG_SOIL_AIR_SENSOR_ENABLED
-    settle_wait(t_on, 45);            /* AHT20 needs 40 ms after power-up, SHT3x/SHT4x 1-2 ms */
-    float at = 0, arh = 0;
-    esp_err_t serr = air_sensor_measure(BOARD_GPIO_I2C_SDA, BOARD_GPIO_I2C_SCL, &at, &arh);
-    board_i2c_release();
-    if (serr == ESP_OK) {
-        r->air_valid = true;
-        r->air_temp_c = at;
-        r->air_rh_pct = arh;
-    }
-#endif
-
     /* capacitive soil module: oscillator + peak detector/RC output need ~1 s to settle */
     settle_wait(t_on, CONFIG_SOIL_SETTLE_MS);
     board_vbat_divider(true);
@@ -158,36 +133,19 @@ esp_err_t sensors_measure(sensor_readings_t *r)
     if (err == ESP_OK) {
         adc_in_t soil = { .gpio = BOARD_GPIO_SOIL_ADC, .atten = ADC_ATTEN_DB_12 };   /* AOUT 0..3 V */
         adc_in_t vbat = { .gpio = BOARD_GPIO_VBAT_ADC, .atten = ADC_ATTEN_DB_6 };    /* VBAT/2 */
-        adc_in_t ntc  = { .gpio = BOARD_GPIO_NTC_ADC,  .atten = ADC_ATTEN_DB_12 };   /* 0..3.3 V */
         adc_in_setup(unit, &soil);
         adc_in_setup(unit, &vbat);
-#if CONFIG_SOIL_ENABLE_NTC
-        adc_in_setup(unit, &ntc);
-#endif
         int n = CONFIG_SOIL_ADC_SAMPLES;
         int soil_mv = adc_read_mv(unit, &soil, n);
         int vb_mv = adc_read_mv(unit, &vbat, n / 2);
-#if CONFIG_SOIL_ENABLE_NTC
-        int ntc_mv = adc_read_mv(unit, &ntc, n / 2);
-        float st = ntc_temp_c(ntc_mv);
-        if (!isnan(st) && st > -40.0f && st < 90.0f) {
-            r->soil_temp_valid = true;
-            r->soil_temp_c = st;
-        }
-#endif
         if (vb_mv > 0) {
             r->vbat_valid = true;
             r->vbat_mv = vb_mv * CONFIG_VBAT_DIVIDER_RATIO_X1000 / 1000;
             r->bat_pct = battery_percent(r->vbat_mv);
         }
         if (soil_mv > CONFIG_SOIL_MODULE_MIN_MV) {   /* below: module unplugged or shorted */
-            r->soil_mv_raw = soil_mv;
-            int comp = soil_mv;
-            if (r->soil_temp_valid && CONFIG_SOIL_TEMP_COMP_UV_PER_C != 0) {
-                comp -= (int)lroundf((float)CONFIG_SOIL_TEMP_COMP_UV_PER_C * (r->soil_temp_c - 25.0f) / 1000.0f);
-            }
-            r->soil_mv = comp;
-            float pct = sensors_soil_percent(comp);
+            r->soil_mv = soil_mv;
+            float pct = sensors_soil_percent(soil_mv);
             if (!isnan(pct)) {
                 r->soil_valid = true;
                 r->soil_pct = pct;
@@ -195,7 +153,6 @@ esp_err_t sensors_measure(sensor_readings_t *r)
         }
         if (soil.cali) adc_cali_delete_scheme_curve_fitting(soil.cali);
         if (vbat.cali) adc_cali_delete_scheme_curve_fitting(vbat.cali);
-        if (ntc.cali) adc_cali_delete_scheme_curve_fitting(ntc.cali);
         adc_oneshot_del_unit(unit);
     } else {
         ESP_LOGE(TAG, "ADC init failed: %s", esp_err_to_name(err));
@@ -205,8 +162,7 @@ esp_err_t sensors_measure(sensor_readings_t *r)
     board_vbat_divider(false);
     esp_pm_lock_release(s_pm_lock);
 
-    ESP_LOGI(TAG, "soil %d mV (raw %d) -> %.1f %% | soilT %.2f C | VBAT %d mV (%u %%) | air %.2f C %.1f %%RH (%s)",
-             r->soil_mv, r->soil_mv_raw, r->soil_pct, r->soil_temp_c, r->vbat_mv, r->bat_pct,
-             r->air_temp_c, r->air_rh_pct, air_sensor_name(air_sensor_type()));
+    ESP_LOGI(TAG, "soil %d mV -> %.1f %%%s | VBAT %d mV (%u %%)", r->soil_mv, r->soil_pct,
+             r->soil_valid ? "" : " (module missing?)", r->vbat_mv, r->bat_pct);
     return err;
 }
