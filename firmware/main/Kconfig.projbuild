@@ -38,11 +38,18 @@ menu "H2 Soil Sensor"
             default 30
 
         config SOIL_SETTLE_MS
-            int "Probe settling time after VSENS on (ms)"
-            range 5 2000
-            default 60
+            int "Soil module settling time after VSENS on (ms)"
+            range 50 10000
+            default 1500
             help
-                Peak detector (C17/R16/R17/C18) needs ~5 time constants; 60 ms is ample.
+                Capacitive soil modules (v1.2/v2.0, DFRobot SEN0193 and clones) need about 1 s
+                after power-up before AOUT is stable (oscillator + peak detector / RC output).
+                The SoC light-sleeps during this time; the module itself draws ~5 mA.
+
+        config SOIL_MODULE_MIN_MV
+            int "AOUT below this value = soil module missing (mV)"
+            range 0 1000
+            default 200
 
         config SOIL_ADC_SAMPLES
             int "ADC samples per channel (averaged, trimmed mean)"
@@ -52,50 +59,77 @@ menu "H2 Soil Sensor"
 
     menu "Calibration"
         config SOIL_CAL_DRY_MV_DEFAULT
-            int "Default DRY point (mV at SOIL_ADC, probe in air)"
-            default 1400
+            int "Default DRY point (mV at AOUT, module in air)"
+            default 2500
+            help
+                Typical capacitive modules at 3.3 V give ~2.4-2.8 V in air and ~1.0-1.4 V in
+                water. Calibrate every module with the button (double click = dry,
+                triple click = wet); the values are stored in NVS.
 
         config SOIL_CAL_WET_MV_DEFAULT
-            int "Default WET point (mV at SOIL_ADC, probe in water)"
-            default 750
+            int "Default WET point (mV at AOUT, module in water)"
+            default 1200
 
         config SOIL_TEMP_COMP_UV_PER_C
-            int "Detector temperature coefficient (uV/degC at SOIL_ADC, 0 = off)"
-            range -10000 10000
-            default 1000
+            int "Soil reading temperature coefficient (uV/degC at AOUT, 0 = off)"
+            range -20000 20000
+            default 0
             help
-                The peak-detector diode forward voltage drops ~2 mV/degC, i.e. +1 mV/degC at the
-                ADC after the 1/2 divider. Compensation uses the soil NTC (if enabled):
-                v_corr = v - k * (T - 25 degC).
+                Optional first-order temperature compensation using the NTC probe:
+                v_corr = v - k * (T - 25 degC). Measure k for your module in a pot of soil
+                (e.g. fridge vs. room temperature) before enabling it.
     endmenu
 
     menu "Hardware options"
         config SOIL_ENABLE_NTC
-            bool "Soil temperature NTC (RT1) populated"
+            bool "Soil temperature: 10k NTC probe on J7"
+            default y
+            help
+                Waterproof 10k NTC probe (2 wires, any polarity). If it is not plugged in at
+                power-up, the temperature cluster is not created (see SOIL_OPTIONAL_EP_AUTO).
+
+        config NTC_R25_OHM
+            int "NTC resistance at 25 degC (ohm)"
+            depends on SOIL_ENABLE_NTC
+            default 10000
+
+        config NTC_BETA
+            int "NTC beta constant B25/50 (K)"
+            depends on SOIL_ENABLE_NTC
+            default 3950
+
+        choice SOIL_AIR_SENSOR
+            prompt "Air temperature/humidity module on J6 (I2C)"
+            default SOIL_AIR_SENSOR_AUTO
+            config SOIL_AIR_SENSOR_AUTO
+                bool "Auto-detect (AHT20 0x38, SHT4x 0x44, SHT3x 0x44/0x45)"
+            config SOIL_AIR_SENSOR_SHT4X
+                bool "Sensirion SHT40/SHT41/SHT45 module"
+            config SOIL_AIR_SENSOR_SHT3X
+                bool "Sensirion SHT30/SHT31/SHT35 module (GY-SHT31-D ...)"
+            config SOIL_AIR_SENSOR_AHT20
+                bool "Aosong AHT20/AHT21 module"
+            config SOIL_AIR_SENSOR_NONE
+                bool "None"
+        endchoice
+
+        config SOIL_AIR_SENSOR_ENABLED
+            bool
+            default n if SOIL_AIR_SENSOR_NONE
             default y
 
-        config SOIL_ENABLE_SHT40
-            bool "SHT40 air temperature/humidity sensor (U4) populated"
+        config SOIL_OPTIONAL_EP_AUTO
+            bool "Create NTC / air endpoints only for sensors found at power-up"
             default y
+            help
+                The first measurement runs before the Matter data model is built. Sensors that
+                do not answer then get no endpoint/cluster, so the controller shows no empty
+                tiles. Plug the modules in before powering the device (re-commission if the
+                set of sensors changes later).
 
         config SOIL_ENABLE_RH_MIRROR
             bool "Expose soil moisture also as a Humidity Sensor endpoint (Apple/Google compatibility)"
             default y
-
-        choice SOIL_EXCITATION
-            prompt "Probe excitation source"
-            default SOIL_EXCITATION_TLC555
-            config SOIL_EXCITATION_TLC555
-                bool "TLC555 oscillator (R13 fitted)"
-            config SOIL_EXCITATION_LEDC
-                bool "LEDC square wave from GPIO4 (R14 fitted, R13/U3 removed)"
-        endchoice
-
-        config SOIL_EXC_LEDC_FREQ_HZ
-            int "LEDC excitation frequency (Hz)"
-            depends on SOIL_EXCITATION_LEDC
-            range 100000 4000000
-            default 1000000
 
         config VBAT_DIVIDER_RATIO_X1000
             int "Battery divider ratio x1000 (R7+R8)/R8"
@@ -120,7 +154,7 @@ menu "H2 Soil Sensor"
 
     menu "GPIO map (ESP32-H2-WROOM-02C)"
         config GPIO_SOIL_ADC
-            int "SOIL_ADC (ADC1)"
+            int "SOIL_ADC (ADC1, soil module AOUT via 1k)"
             default 1
         config GPIO_VBAT_ADC
             int "VBAT_ADC (ADC1)"
@@ -128,9 +162,6 @@ menu "H2 Soil Sensor"
         config GPIO_NTC_ADC
             int "NTC_ADC (ADC1)"
             default 3
-        config GPIO_PROBE_EXC
-            int "PROBE_EXC_MCU (LEDC option)"
-            default 4
         config GPIO_SENS_PWR_EN_N
             int "SENS_PWR_EN_N (low = VSENS on)"
             default 10

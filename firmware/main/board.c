@@ -1,7 +1,6 @@
 #include "board.h"
 
 #include "driver/gpio.h"
-#include "driver/ledc.h"
 #include "esp_log.h"
 
 static const char *TAG = "board";
@@ -45,7 +44,7 @@ esp_err_t board_init(void)
     pin_hiz(BOARD_GPIO_SOIL_ADC);
     pin_hiz(BOARD_GPIO_VBAT_ADC);
     pin_hiz(BOARD_GPIO_NTC_ADC);
-    pin_hiz(BOARD_GPIO_PROBE_EXC);
+    pin_hiz(4);   /* IO4 spare */
     pin_hiz(5);   /* IO5 spare */
     pin_hiz(25);  /* IO25 spare (JTAG strap, ignored with default eFuses) */
     ESP_LOGI(TAG, "board GPIO initialised");
@@ -82,39 +81,13 @@ void board_i2c_release(void)
     pin_hiz(BOARD_GPIO_I2C_SCL);
 }
 
-#if CONFIG_SOIL_EXCITATION_LEDC
-esp_err_t board_probe_excitation(bool on)
+void board_hold_power_pins(bool hold)
 {
-    if (!on) {
-        ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
-        pin_hiz(BOARD_GPIO_PROBE_EXC);
-        return ESP_OK;
+    if (hold) {
+        gpio_hold_en(BOARD_GPIO_SENS_PWR_EN_N);
+        gpio_hold_en(BOARD_GPIO_VBAT_MEAS_EN);
+    } else {
+        gpio_hold_dis(BOARD_GPIO_SENS_PWR_EN_N);
+        gpio_hold_dis(BOARD_GPIO_VBAT_MEAS_EN);
     }
-    ledc_timer_config_t t = {
-        .speed_mode = LEDC_LOW_SPEED_MODE,
-        .duty_resolution = LEDC_TIMER_4_BIT,
-        .timer_num = LEDC_TIMER_0,
-        .freq_hz = CONFIG_SOIL_EXC_LEDC_FREQ_HZ,
-        .clk_cfg = LEDC_AUTO_CLK,
-    };
-    esp_err_t err = ledc_timer_config(&t);
-    if (err != ESP_OK) {
-        return err;
-    }
-    ledc_channel_config_t ch = {
-        .gpio_num = BOARD_GPIO_PROBE_EXC,
-        .speed_mode = LEDC_LOW_SPEED_MODE,
-        .channel = LEDC_CHANNEL_0,
-        .timer_sel = LEDC_TIMER_0,
-        .duty = 8,   /* 50 % of 16 */
-        .hpoint = 0,
-    };
-    return ledc_channel_config(&ch);
 }
-#else
-esp_err_t board_probe_excitation(bool on)
-{
-    (void)on;
-    return ESP_OK;  /* TLC555 runs from VSENS */
-}
-#endif

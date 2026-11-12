@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "air_sensor.h"
 #include "battery.h"
 #include "board.h"
 #include "calibration.h"
@@ -16,7 +17,6 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "sht40.h"
 
 static const char *TAG = "sensors";
 static esp_pm_lock_handle_t s_pm_lock;
@@ -88,13 +88,13 @@ static int adc_read_mv(adc_oneshot_unit_handle_t unit, adc_in_t *in, int n)
 /* ------------------------------------------------------------------ conversions */
 static float ntc_temp_c(int mv)
 {
-    /* VSENS -- R18 10k -- NTC_ADC -- RT1 (10k, B3380) -- GND */
+    /* VSENS -- R18 10k -- NTC_ADC -- NTC probe (CONFIG_NTC_R25_OHM, beta CONFIG_NTC_BETA) -- GND */
     const float vs = (float)CONFIG_NTC_SUPPLY_MV;
     if (mv < 30 || mv > vs - 30) {
-        return NAN;   /* open / shorted / not populated */
+        return NAN;   /* probe not connected (open -> ~VSENS) or shorted */
     }
     float r = 10000.0f * (float)mv / (vs - (float)mv);
-    float inv_t = 1.0f / 298.15f + logf(r / 10000.0f) / 3380.0f;
+    float inv_t = 1.0f / 298.15f + logf(r / (float)CONFIG_NTC_R25_OHM) / (float)CONFIG_NTC_BETA;
     return 1.0f / inv_t - 273.15f;
 }
 
@@ -110,6 +110,20 @@ float sensors_soil_percent(int soil_mv)
 }
 
 /* ------------------------------------------------------------------ measurement */
+static void settle_wait(int64_t t_on_us, int ms)
+{
+    int64_t left = ms - (esp_timer_get_time() - t_on_us) / 1000;
+    if (left <= 0) {
+        return;
+    }
+    /* keep VSENS / divider state latched and let the SoC light-sleep while the module settles */
+    board_hold_power_pins(true);
+    esp_pm_lock_release(s_pm_lock);
+    vTaskDelay(pdMS_TO_TICKS(left));
+    esp_pm_lock_acquire(s_pm_lock);
+    board_hold_power_pins(false);
+}
+
 esp_err_t sensors_measure(sensor_readings_t *r)
 {
     memset(r, 0, sizeof(*r));
@@ -118,15 +132,13 @@ esp_err_t sensors_measure(sensor_readings_t *r)
     }
     esp_pm_lock_acquire(s_pm_lock);
 
-    board_vbat_divider(true);
     board_sensor_power(true);
-    board_probe_excitation(true);
     int64_t t_on = esp_timer_get_time();
 
-#if CONFIG_SOIL_ENABLE_SHT40
-    vTaskDelay(pdMS_TO_TICKS(2));   /* SHT40 power-up time 1 ms */
+#if CONFIG_SOIL_AIR_SENSOR_ENABLED
+    settle_wait(t_on, 45);            /* AHT20 needs 40 ms after power-up, SHT3x/SHT4x 1-2 ms */
     float at = 0, arh = 0;
-    esp_err_t serr = sht40_measure(BOARD_GPIO_I2C_SDA, BOARD_GPIO_I2C_SCL, &at, &arh);
+    esp_err_t serr = air_sensor_measure(BOARD_GPIO_I2C_SDA, BOARD_GPIO_I2C_SCL, &at, &arh);
     board_i2c_release();
     if (serr == ESP_OK) {
         r->air_valid = true;
@@ -135,17 +147,16 @@ esp_err_t sensors_measure(sensor_readings_t *r)
     }
 #endif
 
-    /* wait for the peak detector to settle (TLC555 starts in microseconds) */
-    int64_t elapsed_ms = (esp_timer_get_time() - t_on) / 1000;
-    if (elapsed_ms < CONFIG_SOIL_SETTLE_MS) {
-        vTaskDelay(pdMS_TO_TICKS(CONFIG_SOIL_SETTLE_MS - elapsed_ms));
-    }
+    /* capacitive soil module: oscillator + peak detector/RC output need ~1 s to settle */
+    settle_wait(t_on, CONFIG_SOIL_SETTLE_MS);
+    board_vbat_divider(true);
+    vTaskDelay(pdMS_TO_TICKS(3));     /* R7/R8 100k || C6 10 nF: tau = 0.5 ms */
 
     adc_oneshot_unit_handle_t unit = NULL;
     adc_oneshot_unit_init_cfg_t ucfg = { .unit_id = ADC_UNIT_1 };
     esp_err_t err = adc_oneshot_new_unit(&ucfg, &unit);
     if (err == ESP_OK) {
-        adc_in_t soil = { .gpio = BOARD_GPIO_SOIL_ADC, .atten = ADC_ATTEN_DB_6 };    /* 0..1.9 V */
+        adc_in_t soil = { .gpio = BOARD_GPIO_SOIL_ADC, .atten = ADC_ATTEN_DB_12 };   /* AOUT 0..3 V */
         adc_in_t vbat = { .gpio = BOARD_GPIO_VBAT_ADC, .atten = ADC_ATTEN_DB_6 };    /* VBAT/2 */
         adc_in_t ntc  = { .gpio = BOARD_GPIO_NTC_ADC,  .atten = ADC_ATTEN_DB_12 };   /* 0..3.3 V */
         adc_in_setup(unit, &soil);
@@ -169,7 +180,7 @@ esp_err_t sensors_measure(sensor_readings_t *r)
             r->vbat_mv = vb_mv * CONFIG_VBAT_DIVIDER_RATIO_X1000 / 1000;
             r->bat_pct = battery_percent(r->vbat_mv);
         }
-        if (soil_mv > 50) {   /* < 50 mV: oscillator / probe missing */
+        if (soil_mv > CONFIG_SOIL_MODULE_MIN_MV) {   /* below: module unplugged or shorted */
             r->soil_mv_raw = soil_mv;
             int comp = soil_mv;
             if (r->soil_temp_valid && CONFIG_SOIL_TEMP_COMP_UV_PER_C != 0) {
@@ -190,13 +201,12 @@ esp_err_t sensors_measure(sensor_readings_t *r)
         ESP_LOGE(TAG, "ADC init failed: %s", esp_err_to_name(err));
     }
 
-    board_probe_excitation(false);
     board_sensor_power(false);
     board_vbat_divider(false);
     esp_pm_lock_release(s_pm_lock);
 
-    ESP_LOGI(TAG, "soil %d mV (raw %d) -> %.1f %% | soilT %.2f C | VBAT %d mV (%u %%) | air %.2f C %.1f %%RH%s",
+    ESP_LOGI(TAG, "soil %d mV (raw %d) -> %.1f %% | soilT %.2f C | VBAT %d mV (%u %%) | air %.2f C %.1f %%RH (%s)",
              r->soil_mv, r->soil_mv_raw, r->soil_pct, r->soil_temp_c, r->vbat_mv, r->bat_pct,
-             r->air_temp_c, r->air_rh_pct, r->air_valid ? "" : " (no SHT40)");
+             r->air_temp_c, r->air_rh_pct, air_sensor_name(air_sensor_type()));
     return err;
 }

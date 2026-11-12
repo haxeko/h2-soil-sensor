@@ -59,7 +59,7 @@ extern "C" void app_main(void)
         sensor_low_battery_shutdown(r.vbat_mv);
     }
 
-    if (app_matter_init() != ESP_OK || app_matter_start() != ESP_OK) {
+    if (app_matter_init(&r) != ESP_OK || app_matter_start() != ESP_OK) {
         status_led_set(LED_ERROR);
         ESP_LOGE(TAG, "Matter init failed");
         return;
