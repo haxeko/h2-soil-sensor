@@ -79,9 +79,8 @@ LABELS = [
 ]
 BACK_TEXT = [   # (text, y, size, bold) on B.SilkS, mirrored
     ("H2 SOIL SENSOR v3", 17.0, 1.2, True), ("Matter over Thread", 19.2, 1.0, False),
-    ("ESP32-H2 + CR123A", 21.2, 1.0, False), ("SOIL J4: 1=GND 2=VCC 3=AOUT", 23.6, 0.8, False),
-    ("PROG 1=3V3 2=GND 3=TX 4=RX", 25.4, 0.8, False), ("5=EN 6=IO9 7=D- 8=D+", 27.0, 0.8, False),
-    ("BAT 2.0-3.3V, reverse protected", 28.8, 0.8, False),
+    ("ESP32-H2 + CR123A", 21.2, 1.0, False), ("BAT 2.0-3.3V, reverse protected", 23.4, 0.8, False),
+    ("Design by Haxeko", 26.2, 1.0, False), ("Made in Vietnam", 28.2, 1.0, False),
 ]
 FULL_ZONE_PADS = set()
 

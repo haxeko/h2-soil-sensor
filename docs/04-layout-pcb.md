@@ -38,7 +38,7 @@ Toạ độ bo (mm), gốc ở góc trên trái, y tăng xuống dưới.
 | x 16.5…20.5, y 35.4 | J4 SOIL, xoay 180° (chân 1 GND ở x 20.5, 2 VCC ở 18.5, 3 AOUT ở 16.5) | Thân cổng quay lên trên, xa hàng pad nạp; nhãn “A V G” phía dưới cổng; C14 ở x 12.4, y 38.5 |
 | x ≈ 24.6, y 31…38 | C13, R12, D3 | Chuỗi vào analog cạnh chân AOUT của J4 |
 | góc dưới trái, y = 41.4 | J3: “−” pad tròn (x 2.2), “+” pad vuông (x 6.8); Q1 (x 10.6), R1 | Nhãn “− BAT +” |
-| góc dưới phải, x 16.2…23.8 | J1: hàng sát mép y = 43.0 (pad 1, 3, 5, 7), hàng trong y = 40.46 (pad 2, 4, 6, 8) | Chữ “1” cạnh pad 1; sơ đồ chân in ở mặt dưới |
+| góc dưới phải, x 16.2…23.8 | J1: hàng sát mép y = 43.0 (pad 1, 3, 5, 7), hàng trong y = 40.46 (pad 2, 4, 6, 8) | Chữ “1” cạnh pad 1; sơ đồ chân xem bảng trong `hardware/README.md` |
 
 ## 4.3 Quy tắc layout quan trọng
 
@@ -67,8 +67,9 @@ Toạ độ bo (mm), gốc ở góc trên trái, y tăng xuống dưới.
    để chịu sai lệch khi tì đồ gá bằng tay. J4 được xoay 180° để thân cổng (cao ~6 mm) quay ra xa hàng pad: tâm hàng pad trong cách mép thân J4 ~3 mm,
    đủ chỗ cho kẹp pogo 2 hàng thông thường; nếu đồ gá quá rộng thì nạp lần đầu trước khi hàn J4.
 2. J3: pad xuyên lỗ lỗ 1.1 mm (dây 0.5 mm²), pad “+” vuông; dây pin nên được giữ thêm bằng keo/dây rút để không giật mối hàn.
-3. Silkscreen mặt trên chỉ ghi nhãn cho người dùng (BOOT, LED, SOIL, “A V G”, “1”, “− BAT +”); mặt dưới in sơ đồ chân
-   (SOIL J4: 1=GND 2=VCC 3=AOUT; PROG 1=3V3 2=GND 3=TX 4=RX 5=EN 6=IO9 7=D- 8=D+; BAT 2.0–3.3V, reverse protected).
+3. Silkscreen mặt trên chỉ ghi nhãn cho người dùng (BOOT, LED, SOIL, “A V G”, “1”, “− BAT +”); mặt dưới chỉ in tên bo
+   (H2 SOIL SENSOR v3, Matter over Thread, ESP32-H2 + CR123A, BAT 2.0–3.3V), “Design by Haxeko” và “Made in Vietnam”;
+   sơ đồ chân J1/J4 xem bảng ở mục 4.2 và trong `hardware/README.md`.
    Ký hiệu linh kiện nằm ở lớp F.Fab (xem `assembly_top.pdf`).
 
 ### Nối đất, khâu via, cố định bo
