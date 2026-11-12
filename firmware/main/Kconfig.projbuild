@@ -131,6 +131,14 @@ menu "H2 Soil Sensor"
             bool "Expose soil moisture also as a Humidity Sensor endpoint (Apple/Google compatibility)"
             default y
 
+        config VSENS_SOFTSTART_US
+            int "VSENS soft-start time (us, 0 = hard switch)"
+            range 0 20000
+            default 1000
+            help
+                Q4 is first turned on through the weak internal pull-down only, which limits the
+                inrush current into the sensor-module capacitors (keeps +3V3 from dipping).
+
         config VBAT_DIVIDER_RATIO_X1000
             int "Battery divider ratio x1000 (R7+R8)/R8"
             default 2000

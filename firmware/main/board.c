@@ -2,6 +2,7 @@
 
 #include "driver/gpio.h"
 #include "esp_log.h"
+#include "esp_rom_sys.h"
 
 static const char *TAG = "board";
 
@@ -54,6 +55,20 @@ esp_err_t board_init(void)
 void board_sensor_power(bool on)
 {
     if (on) {
+#if CONFIG_VSENS_SOFTSTART_US > 0
+        /* Soft start: first only the weak internal pull-down (~45 k) works against R9 (100 k),
+         * so the Q4 gate slews slowly and the inrush into C7/C14 and the module capacitors
+         * is spread out instead of pulling the +3V3 rail down; then drive the gate hard. */
+        gpio_config_t c = {
+            .pin_bit_mask = 1ULL << BOARD_GPIO_SENS_PWR_EN_N,
+            .mode = GPIO_MODE_INPUT,
+            .pull_up_en = GPIO_PULLUP_DISABLE,
+            .pull_down_en = GPIO_PULLDOWN_ENABLE,
+            .intr_type = GPIO_INTR_DISABLE,
+        };
+        gpio_config(&c);
+        esp_rom_delay_us(CONFIG_VSENS_SOFTSTART_US);
+#endif
         pin_out(BOARD_GPIO_SENS_PWR_EN_N, 0);   /* Q4 gate low -> VSENS on */
     } else {
         pin_out(BOARD_GPIO_SENS_PWR_EN_N, 1);   /* drive off quickly ... */

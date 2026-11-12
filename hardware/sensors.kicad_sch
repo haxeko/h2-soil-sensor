@@ -1359,16 +1359,16 @@
     (dnp no)
     (uuid a46bc7c4-dd23-5979-baf0-355d22cb5525)
     (property "Reference" "C14" (at 320.04 92.71 0) (effects (font (size 1.27 1.27)) (justify left)))
-    (property "Value" "10uF 10V" (at 320.04 95.25 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Value" "1uF" (at 320.04 95.25 0) (effects (font (size 1.27 1.27)) (justify left)))
     (property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
       (at 317.5 93.98 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (at 317.5 93.98 0) (effects (font (size 1.27 1.27)) hide))
-    (property "LCSC" "C19702" (at 317.5 93.98 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "CL10A106KP8NNNC" (at 317.5 93.98 0) (effects (font (size 1.27 1.27)) hide))
+    (property "LCSC" "C15849" (at 317.5 93.98 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "CL10A105KB8NNNC" (at 317.5 93.98 0) (effects (font (size 1.27 1.27)) hide))
     (property "Manufacturer" "Samsung" (at 317.5 93.98 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Note" "Dem cho module (~5 mA, LDO 662K)"
+    (property "Note" "Dem VSENS (nho de han dong khoi dong, module co tu rieng)"
       (at 317.5 93.98 0)
       (effects (font (size 1.27 1.27)) hide)
     )

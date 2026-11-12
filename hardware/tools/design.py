@@ -188,7 +188,7 @@ COMPONENTS = [
     R(SE, "R19", "10k", 271.78, 93.98, 0, "VSENS", "I2C_SDA", note="Pull-up (module thuong da co 10k)"),
     R(SE, "R20", "10k", 287.02, 93.98, 0, "VSENS", "I2C_SCL"),
     C(SE, "C20", "100nF", 302.26, 93.98, 0, "VSENS", "GND"),
-    C(SE, "C14", "10uF 10V", 317.5, 93.98, 0, "VSENS", "GND", note="Dem cho module (~5 mA, LDO 662K)"),
+    C(SE, "C14", "1uF", 317.5, 93.98, 0, "VSENS", "GND", note="Dem VSENS (nho de han dong khoi dong, module co tu rieng)"),
     # --- ESD protection of every line that leaves the enclosure (clamps to VSENS, 0 leakage when off)
     P(SE, "U3", "Power_Protection", "SRV05-4", "SRV05-4", "Package_TO_SOT_SMD:SOT-23-6", "C13612", "SRV05-4.TCT",
       "Semtech", 248.92, 160.02, 0,
