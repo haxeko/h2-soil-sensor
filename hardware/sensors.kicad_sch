@@ -4,9 +4,9 @@
   (uuid 1a26de8a-3e61-565b-be95-cde1ef94dd95)
   (paper "A3")
   (title_block
-    (title "Sensor connectors: soil module, I2C module, NTC probe")
+    (title "Soil module connector: J4 PH2.0-3P, ESD, ADC filter")
     (date "2026-11-12")
-    (rev "2.0")
+    (rev "3.0")
     (company "H2 Soil Sensor - Matter over Thread")
     (comment 1 "ESP32-H2-WROOM-02C, CR123A, TPS63900")
   )

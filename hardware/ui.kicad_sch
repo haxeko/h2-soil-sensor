@@ -4,9 +4,9 @@
   (uuid 2a05e5d0-31d9-50cd-929a-0d27aa1e2505)
   (paper "A3")
   (title_block
-    (title "UI: button, LED, prog header, test points")
+    (title "UI: button, LED, programming pads")
     (date "2026-11-12")
-    (rev "2.0")
+    (rev "3.0")
     (company "H2 Soil Sensor - Matter over Thread")
     (comment 1 "ESP32-H2-WROOM-02C, CR123A, TPS63900")
   )

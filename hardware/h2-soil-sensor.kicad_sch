@@ -6,7 +6,7 @@
   (title_block
     (title "H2 Soil Sensor - Matter over Thread (ESP32-H2, CR123A)")
     (date "2026-11-12")
-    (rev "2.0")
+    (rev "3.0")
     (company "H2 Soil Sensor")
     (comment 1 "Root sheet: so do khoi + 4 sheet con (ket noi bang global label)")
   )
@@ -72,7 +72,7 @@
     )
     (instances (project "h2-soil-sensor" (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a" (page "4"))))
   )
-  (text "Sensor connectors: soil module,\nI2C module,\nNTC probe"
+  (text "Soil module connector: J4 PH2.0-3P,\nESD,\nADC filter"
     (at 223.52 177.8 0)
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid fe3a5fec-852a-5119-8aa5-e56c79f7ff03)
@@ -91,7 +91,7 @@
     )
     (instances (project "h2-soil-sensor" (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a" (page "5"))))
   )
-  (text "UI: button,\nLED,\nprog header,\ntest points"
+  (text "UI: button,\nLED,\nprogramming pads"
     (at 318.77 177.8 0)
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid 17349991-11af-5e1c-acf1-bb6741a80fb1)

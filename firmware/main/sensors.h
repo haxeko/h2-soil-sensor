@@ -24,7 +24,7 @@ typedef struct {
 
 } sensor_readings_t;
 
-/** Run one complete measurement (CONFIG_SOIL_SETTLE_MS in light sleep + ~30-120 ms awake). */
+/** Run one complete measurement (CONFIG_SOIL_SETTLE_MS in light sleep + ~10 ms awake). */
 esp_err_t sensors_measure(sensor_readings_t *out);
 
 /** Soil % from a compensated SOIL_ADC voltage and the stored calibration. */

@@ -29,9 +29,9 @@ SHEETS = [
     dict(name="MCU", file="mcu.kicad_sch", page="3",
          title="MCU: ESP32-H2-WROOM-02C (Thread ICD)"),
     dict(name="Sensors", file="sensors.kicad_sch", page="4",
-         title="Sensor connectors: soil module, I2C module, NTC probe"),
+         title="Soil module connector: J4 PH2.0-3P, ESD, ADC filter"),
     dict(name="UI", file="ui.kicad_sch", page="5",
-         title="UI: button, LED, prog header, test points"),
+         title="UI: button, LED, programming pads"),
 ]
 
 # Common footprints / parts --------------------------------------------------
