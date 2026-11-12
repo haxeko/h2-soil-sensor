@@ -72,7 +72,7 @@
     )
     (instances (project "h2-soil-sensor" (path "/f10f2bc8-31b8-5d64-be2f-c49ea4500b7a" (page "4"))))
   )
-  (text "Sensors: capacitive probe,\nsoil NTC,\nSHT40"
+  (text "Sensor connectors: soil module,\nI2C module,\nNTC probe"
     (at 223.52 177.8 0)
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid fe3a5fec-852a-5119-8aa5-e56c79f7ff03)
@@ -96,14 +96,14 @@
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid 17349991-11af-5e1c-acf1-bb6741a80fb1)
   )
-  (text "SO DO KHOI - H2 Soil Sensor (Matter over Thread, ESP32-H2, 1x CR123A)"
+  (text "SO DO KHOI v2 - Bo mach ESP32-H2 + nguon pin, cam bien la module co san (Matter over Thread)"
     (at 25.4 22.86 0)
     (effects (font (size 2.54 2.54)) (justify left bottom))
     (uuid d3d5851d-af89-575d-8517-93ef6f06aec5)
   )
-  (text_box "CR123A 3.0V\nLi-MnO2 ~1500mAh\n(BT1, gia THT)"
+  (text_box "CR123A 3.0V\nLi-MnO2 ~1500mAh\n(gia pin co day)\nJ2 JST-PH 2P / J3 pad"
     (at 25.4 33.02 0)
-    (size 33.02 15.24)
+    (size 33.02 20.32)
     (stroke (width 0.3) (type default))
     (fill (type none))
     (effects (font (size 1.524 1.524) bold) (justify left top))
@@ -149,45 +149,37 @@
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid 886f9a3d-5859-59d5-8075-4a4579817a3e)
   )
-  (text_box "TLC555I astable\n~0.5-0.7 MHz\n50% duty"
+  (text_box "J4 PH2.0-3P ->\nMODULE DO AM DAT DIEN DUNG\nv1.2/v2.0 (TLC555), AOUT 0-3V\n(cam vao dat, day ~1m)"
     (at 25.4 124.46 0)
-    (size 38.1 15.24)
+    (size 50.8 20.32)
     (stroke (width 0.3) (type default))
     (fill (type none))
     (effects (font (size 1.524 1.524)) (justify left top))
-    (uuid c7df9c57-ad24-54bc-94c1-64e352bfcc4b)
+    (uuid a2d12cd1-8fc8-53bf-bae0-6f334c206160)
   )
-  (text_box "RS 10k + dien cuc SENSE\nin tren PCB (que 80mm)\nC_dat 15..250 pF"
-    (at 76.2 124.46 0)
-    (size 43.18 15.24)
+  (text_box "J6 1x4 2.54mm ->\nMODULE I2C NHIET/AM KHONG KHI\nSHT4x / SHT3x / AHT20\n(GY-xxx, Adafruit...)"
+    (at 86.36 124.46 0)
+    (size 50.8 20.32)
     (stroke (width 0.3) (type default))
     (fill (type none))
     (effects (font (size 1.524 1.524)) (justify left top))
-    (uuid 3c65d2e5-0263-5078-bfab-0bfb3dfa4430)
+    (uuid 4404653c-5668-51e2-9a2c-078f379ebffa)
   )
-  (text_box "D1 tach dinh + C17\nchia 1/2 (R16/R17)\n-> ~0.7..1.4 V"
-    (at 132.08 124.46 0)
-    (size 43.18 15.24)
-    (stroke (width 0.3) (type default))
-    (fill (type none))
-    (effects (font (size 1.524 1.524)) (justify left top))
-    (uuid 5000252c-5280-5a34-afc1-a4e1d6990069)
-  )
-  (text_box "NTC 10k B3380\n(nhiet do dat)"
-    (at 76.2 152.4 0)
-    (size 43.18 12.7)
+  (text_box "J7 PH2.0-2P ->\nDAU DO NTC 10k\nchong nuoc (tuy chon)\n-> nhiet do dat"
+    (at 147.32 124.46 0)
+    (size 43.18 20.32)
     (stroke (width 0.3) (type default))
     (fill (type none))
     (effects (font (size 1.524 1.524)) (justify left top))
     (uuid 9ce01cc0-dc9a-5ac9-8dd5-21f339442833)
   )
-  (text_box "SHT40-AD1F (I2C)\nnhiet/am khong khi"
-    (at 132.08 152.4 0)
-    (size 43.18 12.7)
+  (text_box "U3 SRV05-4: TVS cho 4 day ra ngoai hop"
+    (at 86.36 152.4 0)
+    (size 50.8 10.16)
     (stroke (width 0.3) (type default))
     (fill (type none))
     (effects (font (size 1.524 1.524)) (justify left top))
-    (uuid af1a1e20-b2ba-5a62-b0ab-1795edec427e)
+    (uuid e1b1e5ba-d906-5bca-bbfb-314e490382ee)
   )
   (text_box "UI / nap:\nSW1 BOOT/USER (IO9)\nLED do (IO0)\nJ1: UART0 + USB-JTAG"
     (at 274.32 33.02 0)
@@ -301,12 +293,12 @@
     (uuid 39793510-d5bb-5512-bf96-b62261aaf905)
   )
   (polyline
-    (pts (xy 143.51 104.14) (xy 143.51 116.84) (xy 44.45 116.84) (xy 44.45 124.46))
+    (pts (xy 143.51 104.14) (xy 143.51 116.84) (xy 50.8 116.84) (xy 50.8 124.46))
     (stroke (width 0.3) (type default))
     (uuid 10d1aba9-5d93-587e-9db3-444a79214651)
   )
   (polyline
-    (pts (xy 43.55 122.96) (xy 44.45 124.46) (xy 45.35 122.96))
+    (pts (xy 49.9 122.96) (xy 50.8 124.46) (xy 51.7 122.96))
     (stroke (width 0.3) (type default))
     (uuid 42f97a6b-b7c2-5357-9f94-ece0ea26b4e5)
   )
@@ -316,27 +308,27 @@
     (uuid c054c1b3-6c4e-541c-a75e-11c22924e604)
   )
   (polyline
-    (pts (xy 63.5 132.08) (xy 76.2 132.08))
+    (pts (xy 111.76 116.84) (xy 111.76 124.46))
     (stroke (width 0.3) (type default))
-    (uuid 3bd07090-14ed-5ead-abda-a0e60e3fdac2)
+    (uuid 3d98c247-2019-5ee0-9d63-83ed0bd28f7f)
   )
   (polyline
-    (pts (xy 74.7 131.18) (xy 76.2 132.08) (xy 74.7 132.98))
+    (pts (xy 110.86 122.96) (xy 111.76 124.46) (xy 112.66 122.96))
     (stroke (width 0.3) (type default))
-    (uuid 9df9e6c8-1dd6-59b0-9038-ed6b8ce9a589)
+    (uuid 47cda567-e538-5faa-801d-53b237dba6ff)
   )
   (polyline
-    (pts (xy 119.38 132.08) (xy 132.08 132.08))
+    (pts (xy 167.64 116.84) (xy 167.64 124.46))
     (stroke (width 0.3) (type default))
-    (uuid 6b6a45bb-4c66-5cb5-86ea-b12c5009327a)
+    (uuid d81a0840-7fe3-5dde-8125-baca5b4259a6)
   )
   (polyline
-    (pts (xy 130.58 131.18) (xy 132.08 132.08) (xy 130.58 132.98))
+    (pts (xy 166.74 122.96) (xy 167.64 124.46) (xy 168.54 122.96))
     (stroke (width 0.3) (type default))
-    (uuid 724474fb-330a-5158-8adb-25761e7d1449)
+    (uuid ba00ed95-82b3-5d0e-a70c-b58c33ba8161)
   )
   (polyline
-    (pts (xy 175.26 132.08) (xy 185.42 132.08) (xy 185.42 88.9) (xy 195.58 88.9))
+    (pts (xy 50.8 144.78) (xy 50.8 170.18) (xy 193.04 170.18) (xy 193.04 88.9) (xy 195.58 88.9))
     (stroke (width 0.3) (type default))
     (uuid 5993f093-f20f-542f-918c-f2a6c20fa9c4)
   )
@@ -346,7 +338,7 @@
     (uuid 7e846fda-ebb9-57b9-918b-dd98e9f478a1)
   )
   (polyline
-    (pts (xy 119.38 158.75) (xy 190.5 158.75) (xy 190.5 93.98) (xy 195.58 93.98))
+    (pts (xy 167.64 144.78) (xy 167.64 165.1) (xy 190.5 165.1) (xy 190.5 93.98) (xy 195.58 93.98))
     (stroke (width 0.3) (type default))
     (uuid 9c454a5c-5d30-5d32-ad53-ce82a00553df)
   )
@@ -356,7 +348,7 @@
     (uuid c6d2934a-b674-54fb-b3c2-1fab4e177ec3)
   )
   (polyline
-    (pts (xy 175.26 162.56) (xy 193.04 162.56) (xy 193.04 96.52) (xy 195.58 96.52))
+    (pts (xy 137.16 134.62) (xy 187.96 134.62) (xy 187.96 96.52) (xy 195.58 96.52))
     (stroke (width 0.3) (type default))
     (uuid bea7ec95-ddb2-54cc-a500-6cbbe332c017)
   )
@@ -386,7 +378,7 @@
     (uuid 550784c8-e3d8-51ce-bb4d-e0621131db47)
   )
   (text "SOIL_ADC / NTC_ADC / I2C"
-    (at 165.1 114.3 0)
+    (at 165.1 175.26 0)
     (effects (font (size 1.27 1.27)))
     (uuid 8c799d0f-dd3e-5b8e-b095-381c134b1ce1)
   )

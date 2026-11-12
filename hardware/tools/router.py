@@ -158,8 +158,11 @@ def stamp_edges(ctx, outline, slot):
             xint = (xb - xa) * (Y - ya) / (yb - ya + 1e-12) + xa
         inside ^= cond & (X < xint)
         dmin = np.minimum(dmin, _dist_seg(X, Y, xa, ya, xb, yb, 0.0))
-    sx1, sy1, sx2, sy2 = slot
-    dslot = _dist_rect(X, Y, (sx1 + sx2) / 2, (sy1 + sy2) / 2, (sx2 - sx1) / 2, (sy2 - sy1) / 2)
+    if slot:
+        sx1, sy1, sx2, sy2 = slot
+        dslot = _dist_rect(X, Y, (sx1 + sx2) / 2, (sy1 + sy2) / 2, (sx2 - sx1) / 2, (sy2 - sy1) / 2)
+    else:
+        dslot = np.full(X.shape, 1e9)
     in_slot = dslot <= 0
     for key, arr in ctx.maps.items():
         L, w, c = key
@@ -209,12 +212,21 @@ def _cells_in(ctx, sh: Shape, shrink=0.0):
     return [(L, a + j, c0 + i) for L in sh.layers for j, i in zip(jj.tolist(), ii.tolist())]
 
 
+def _fps(board):
+    """Footprints in a stable order (file order follows random UUIDs)."""
+    return sorted(board.GetFootprints(), key=lambda f: f.GetReference())
+
+
+def _pads(fp):
+    return sorted(fp.Pads(), key=lambda p: (p.GetNumber(), p.GetPosition().x, p.GetPosition().y))
+
+
 def scan_board(ctx, board):
     ctx.net_id = {}
     ctx.net_pads = {}
     ctx.pad_shapes = {}
-    for fp in board.GetFootprints():
-        for pad in fp.Pads():
+    for fp in _fps(board):
+        for pad in _pads(fp):
             net = pad.GetNetname()
             nid = ctx.netcode(net) if net else -2
             clr = ctx.clr_of(net)
@@ -224,7 +236,7 @@ def scan_board(ctx, board):
             if net and shapes:
                 ctx.net_pads.setdefault(net, []).append((fp.GetReference(), pad.GetNumber(), shapes[0], pad))
     # footprint rule areas (e.g. Sensirion keep-out under the SHT4x)
-    for fp in board.GetFootprints():
+    for fp in _fps(board):
         for z in fp.Zones():
             if z.GetIsRuleArea() and z.GetDoNotAllowTracks():
                 r = z.GetBoundingBox()
@@ -234,13 +246,17 @@ def scan_board(ctx, board):
                 stamp(ctx, Shape("rect", ((x1 + x2) / 2, (y1 + y2) / 2, (x2 - x1) / 2, (y2 - y1) / 2), lays, -2, 0.0,
                                  keepout=True))
     # module body keep-out on the top layer (Espressif: keep GND under the module)
-    for fp in board.GetFootprints():
+    for fp in _fps(board):
         if fp.GetReference() == "U2":
             x, y = _local(ctx, fp.GetPosition())
             stamp(ctx, Shape("rect", (x, y - 1.3, 7.4, 8.4), (0,), -2, 0.0))
+        # no tracks / vias under mounting screw heads (GND pour is still allowed there)
+        if fp.GetReference().startswith("H"):
+            x, y = _local(ctx, fp.GetPosition())
+            stamp(ctx, Shape("circle", (x, y, 3.2), (0, 1), -2, 0.0, keepout=True))
     # pre-routed tracks / vias
     ctx.prerouted = {}
-    for t in board.GetTracks():
+    for t in sorted(board.GetTracks(), key=lambda t: (t.GetNetname(), t.GetStart().x, t.GetStart().y, t.GetEnd().x, t.GetEnd().y)):
         net = t.GetNetname()
         nid = ctx.netcode(net)
         if isinstance(t, pcbnew.PCB_VIA):
@@ -446,7 +462,7 @@ def route_board(board, origin, width, route_ymax, netclasses, net_to_class, outl
     import gen_pcb  # outline/slot definitions
     global COST_BOTTOM
     outline = outline or gen_pcb.OUTLINE
-    slot = slot or gen_pcb.SLOT
+    slot = slot if slot is not None else getattr(gen_pcb, "SLOT", None)
     order = None
     failed = []
     for attempt in range(tries):
@@ -464,7 +480,7 @@ def route_board(board, origin, width, route_ymax, netclasses, net_to_class, outl
                 ys = [p[2].params[1] for p in pads]
                 span = (max(xs) - min(xs)) + (max(ys) - min(ys))
                 power = 0 if net_to_class.get(n) == "Power" else 1
-                return (0 if span < 6.0 else 1, power, span)
+                return (0 if span < 6.0 else 1, power, round(span, 3), n)
             order = sorted(nets, key=prio)
         COST_BOTTOM = 1.8
         failed = []
@@ -590,8 +606,9 @@ def fanout_ground(ctx, board, quiet=False):
         print("GND fan-out vias:", count)
 
 
-def finish_ground(board, origin, soil_y, slot):
-    """GND pours (both layers, electronics section), stitching vias, fill."""
+def finish_ground(board, origin, rect, slot=None):
+    """GND pours (both layers) over rect=(x1, y1, x2, y2) board-local, stitching vias, fill."""
+    rx1, ry1, rx2, ry2 = rect
     ctx = board_ctx[0]
     gnd = board.FindNet("GND")
     ox, oy = origin
@@ -601,7 +618,7 @@ def finish_ground(board, origin, soil_y, slot):
         z.SetNet(gnd)
         ol = z.Outline()
         ol.NewOutline()
-        for (x, y) in [(-1, -1), (27, -1), (27, soil_y - 2.0), (-1, soil_y - 2.0)]:
+        for (x, y) in [(rx1, ry1), (rx2, ry1), (rx2, ry2), (rx1, ry2)]:
             ol.Append(MM(ox + x), MM(oy + y))
         z.SetLocalClearance(MM(0.3))
         z.SetMinThickness(MM(0.25))
@@ -623,9 +640,9 @@ def finish_ground(board, origin, soil_y, slot):
     added = 0
     pitch = 2.5
     y = 1.2
-    while y < soil_y - 3.0:
+    while y < ry2 - 1.0:
         x = 1.2
-        while x < 25.0:
+        while x < (ctx.nx - 1) * RES - 1.0:
             i, j = int(round(x / RES)), int(round(y / RES))
             if 0 <= j < ctx.ny and vF[j, i] in (-1, nid) and vB[j, i] in (-1, nid):
                 p = pcbnew.VECTOR2I(MM(ox + x), MM(oy + y))
@@ -641,7 +658,7 @@ def finish_ground(board, origin, soil_y, slot):
         fixed = 0
         holes = [(TOMM(v.GetPosition().x) - ox, TOMM(v.GetPosition().y) - oy) for v in board.GetTracks()
                  if isinstance(v, pcbnew.PCB_VIA) and v.GetNetname() == "GND"]
-        for fp in board.GetFootprints():
+        for fp in _fps(board):
             for pad in fp.Pads():
                 if pad.HasHole() and pad.GetNetname() == "GND":
                     holes.append((TOMM(pad.GetPosition().x) - ox, TOMM(pad.GetPosition().y) - oy))

@@ -5,17 +5,17 @@
       "Application": "Pcbnew",
       "Version": "7.0.11+dfsg-1build4"
     },
-    "CreationDate": "2026-11-11T21:14:59+00:00"
+    "CreationDate": "2026-11-12T03:12:57+00:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
       "Name": "h2-soil-sensor",
       "GUID": "68322d73-6f69-46c2-9d73-656e736f722e",
-      "Revision": "1.0"
+      "Revision": "2.0"
     },
     "Size": {
-      "X": 26.1,
-      "Y": 212.1
+      "X": 36.1,
+      "Y": 60.1
     },
     "LayerNumber": 2,
     "BoardThickness": 1.6,

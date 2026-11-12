@@ -180,11 +180,14 @@ def main(hw):
     lib = os.path.join(hw, "lib")
     pretty = os.path.join(lib, "h2soil.pretty")
     os.makedirs(pretty, exist_ok=True)
-    for f in (esp32_h2_wroom_02c(), battery_holder(), soil_probe()):
+    for old in ("BatteryHolder_MYOUNG_BH-123A-A1CJ002.kicad_mod", "SoilProbe_Capacitive_80mm.kicad_mod"):
+        if os.path.exists(os.path.join(pretty, old)):
+            os.remove(os.path.join(pretty, old))   # v1 parts, not used by the v2 carrier board
+    for f in (esp32_h2_wroom_02c(),):
         f.write(pretty)
     with open(os.path.join(pretty, "WSON-10-1EP_2.5x2.5mm_P0.5mm_EP1.2x2mm_ThermalVias_0.3mm.kicad_mod"), "w") as fh:
         fh.write(wson10_tps63900())
-    syms = project_symbols()
+    syms = {k: v for k, v in project_symbols().items() if k != "SoilProbe_Capacitive"}
     node = ["kicad_symbol_lib", ["version", 20220914], ["generator", "kicad_symbol_editor"]] + list(syms.values())
     with open(os.path.join(lib, "h2soil.kicad_sym"), "w", encoding="utf-8") as fh:
         fh.write(dumps(node) + "\n")

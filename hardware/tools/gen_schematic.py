@@ -180,6 +180,8 @@ class Sheet:
             rpos, vpos = (X, Y - 5.0), (X, Y - 3.0)
         elif name in ("SW_Push", "LED", "D", "Crystal", "MountingHole"):
             rpos, vpos = (X, Y - 3.81), (X, Y + 3.81)
+        elif name.startswith("Conn_"):   # connectors: texts on the free (body) side, away from the stubs
+            rpos, vpos, just = (X - 1.27, Y + miny - 2.54), (X - 1.27, Y + maxy + 2.54), "right"
         elif len(nums) == 3:  # MOSFETs
             if (maxy - miny) >= (maxx - minx):
                 rpos, vpos, just = (X + maxx + 1.27, Y - 1.27), (X + maxx + 1.27, Y + 1.27), "left"
@@ -213,6 +215,7 @@ class Sheet:
 
         # connections
         done = set()
+        pstub = {"L": 0, "R": 0}   # stagger power symbols on adjacent horizontal pins
         for p in pins:
             num = p["number"]
             if num in done:
@@ -228,7 +231,11 @@ class Sheet:
                 self.no_connect(pos)
                 continue
             dn = dir_name(d)
-            end = (fx(pos[0] + d[0] * STUB), fx(pos[1] + d[1] * STUB))
+            stub = STUB
+            if net in design.POWER_NETS and dn in ("L", "R"):
+                stub = STUB + 5.08 * (pstub[dn] % 2)
+                pstub[dn] += 1
+            end = (fx(pos[0] + d[0] * stub), fx(pos[1] + d[1] * stub))
             self.wire(pos, end)
             if net in design.POWER_NETS:
                 self.power(net, end, dn)

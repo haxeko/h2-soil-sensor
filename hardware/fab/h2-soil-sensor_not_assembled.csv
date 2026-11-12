@@ -1,17 +1,18 @@
 Designator,Value,Reason
-C10,18pF C0G,DNP
-C11,18pF C0G,DNP
-C12,100nF,DNP
-H1,M2,not assembled
-H2,M2,not assembled
-PRB1,SoilProbe 80mm,not assembled
-R14,0R,DNP
-SW2,RESET,DNP
-TP1,VBAT,not assembled
-TP2,3V3,not assembled
-TP3,GND,not assembled
-TP4,VSENS,not assembled
-TP5,SOIL,not assembled
-TP6,PROBE,not assembled
-U2,ESP32-H2-WROOM-02C-H4S,not assembled
-Y1,32.768kHz 12.5pF,DNP
+C10,18pF C0G,DNP (tuy chon)
+C11,18pF C0G,DNP (tuy chon)
+C12,100nF,DNP (tuy chon)
+H1,M3,khong lap (pad/lo/test point)
+H2,M3,khong lap (pad/lo/test point)
+J1,PROG,THT - han tay (C492407)
+J2,BAT (PH2.0),THT - han tay (C131337)
+J3,BAT (pads),khong lap (pad/lo/test point)
+J4,SOIL (PH2.0),THT - han tay (C131339)
+J6,I2C (2.54),THT - han tay (C2691448)
+J7,NTC (PH2.0),THT - han tay (C131337)
+TP1,VBAT,khong lap (pad/lo/test point)
+TP2,3V3,khong lap (pad/lo/test point)
+TP3,GND,khong lap (pad/lo/test point)
+TP4,VSENS,khong lap (pad/lo/test point)
+U2,ESP32-H2-WROOM-02C-H4S,module ESP32-H2 - han tay / dat rieng
+Y1,32.768kHz 12.5pF,DNP (tuy chon)

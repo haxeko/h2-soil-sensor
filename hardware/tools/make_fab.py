@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import zipfile
 
+import fpinfo
 import gen_pcb
 
 HW = gen_pcb.HW
@@ -45,13 +46,21 @@ def gerbers():
 
 def bom_and_cpl():
     comps, _ = gen_pcb.read_netlist()
-    # ---- BOM (JLCPCB format), module / probe / holes / test points / DNP excluded
+    # ---- BOM (JLCPCB SMT format); module / THT connectors / holes / test points / DNP listed separately
     groups = {}
     excluded = []
     for ref, c in sorted(comps.items()):
         lcsc = c["fields"].get("LCSC", "")
-        if c["dnp"] or not lcsc or ref.startswith(("U2", "PRB", "H", "TP")):
-            excluded.append((ref, c["value"], "DNP" if c["dnp"] else "not assembled"))
+        if c["dnp"] or not lcsc or ref.startswith(("U2", "H", "TP")) or fpinfo.info(c["footprint"])["tht"]:
+            if c["dnp"]:
+                why = "DNP (tuy chon)"
+            elif ref == "U2":
+                why = "module ESP32-H2 - han tay / dat rieng"
+            elif fpinfo.info(c["footprint"])["tht"] and lcsc:
+                why = "THT - han tay (" + lcsc + ")"
+            else:
+                why = "khong lap (pad/lo/test point)"
+            excluded.append((ref, c["value"], why))
             continue
         key = (c["value"], c["footprint"].split(":")[1], lcsc, c["fields"].get("MPN", ""),
                c["fields"].get("Manufacturer", ""))
@@ -93,6 +102,7 @@ def bom_and_cpl():
 
 def drawings():
     os.makedirs(DOCS, exist_ok=True)
+    run("kicad-cli", "sch", "export", "pdf", "-o", os.path.join(DOCS, "schematic.pdf"), gen_pcb.SCH_PATH)
     run("kicad-cli", "pcb", "export", "pdf", "--layers", "F.Fab,Edge.Cuts", "--include-border-title",
         "-o", os.path.join(DOCS, "assembly_top.pdf"), PCB)
     run("kicad-cli", "pcb", "export", "pdf", "--layers", "F.Cu,F.SilkS,F.Mask,Edge.Cuts", "--include-border-title",

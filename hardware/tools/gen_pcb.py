@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Build, route and check the H2 soil sensor PCB (KiCad 7, pcbnew Python API).
+"""Build, route and check the H2 soil sensor carrier PCB v2 (KiCad 7, pcbnew Python API).
+
+v2 = ESP32-H2 module + CR123A power stage + connectors for off-the-shelf sensor modules
+(capacitive soil module, I2C air T/RH module, optional NTC probe). 36 x 60 mm, 2 layers.
 
 Steps
   1. read the netlist exported from the schematic (kicad-cli) - single source of truth
-  2. place footprints (stake-shaped 2-layer board, 26 mm electronics / 20 mm probe)
-  3. hand-route the analog probe nets (sense electrode, NTC on the stake)
-  4. GND fan-out vias, then route all other nets with a 2-layer grid A* router (router.py)
-  5. GND pours on both layers + stitching vias, zone fill, DRC report
+  2. place footprints (python3 gen_pcb.py --check only prints courtyard overlaps)
+  3. pre-route the TPS63900 switching loop, GND fan-out vias, then route all other nets
+     with a 2-layer grid A* router (router.py)
+  4. GND pours on both layers + stitching vias, zone fill, DRC report
 
-Usage: python3 gen_pcb.py            (run from hardware/tools)
+Usage: python3 gen_pcb.py [--check]      (run from hardware/tools)
 """
 from __future__ import annotations
 
@@ -20,6 +23,7 @@ import tempfile
 
 import pcbnew
 
+import fpinfo
 import router
 from sexp import find, find_all, loads
 
@@ -30,8 +34,7 @@ PRO_PATH = os.path.join(HW, "h2-soil-sensor.kicad_pro")
 SCH_PATH = os.path.join(HW, "h2-soil-sensor.kicad_sch")
 KICAD_FP = "/usr/share/kicad/footprints"
 X0, Y0 = 100.0, 40.0          # board-local (0,0) -> absolute KiCad coordinates
-W = 26.0                      # electronics section width
-SOIL_Y = 124.0                # soil line (probe footprint origin)
+W, H = 36.0, 60.0             # board size (mm); module antenna overhangs the top edge
 
 MM = pcbnew.FromMM
 
@@ -42,42 +45,55 @@ def P(x, y):
 
 # ref: (x, y, rotation_deg) in board-local mm, all on the top side
 PLACE = {
-    "U2": (13.0, 4.0, 0),
-    "C9": (2.0, 2.3, 270), "C8": (2.0, 5.4, 270), "R11": (2.0, 10.4, 270),
-    "Y1": (8.5, 16.8, 180), "C10": (5.6, 17.2, 270), "C11": (11.4, 17.2, 270),
-    "R22": (20.3, 16.8, 0), "D2": (23.6, 16.8, 180),
-    # TPS63900 power stage
+    # ESP32-H2 module, antenna (module y -10..-4) hangs over the top board edge
+    "U2": (18.0, 4.0, 0),
+    "C9": (4.0, 2.3, 270), "C8": (4.0, 5.4, 270), "R11": (4.0, 10.4, 270), "C12": (4.0, 13.4, 270),
+    "Y1": (13.5, 16.8, 180), "C10": (10.6, 17.2, 270), "C11": (16.4, 17.2, 270),
+    "R22": (30.2, 1.6, 0), "D2": (33.4, 1.6, 180),
+    # TPS63900 power stage (same as rev 1)
     "C1": (3.3, 21.7, 180), "R10": (6.6, 21.7, 0), "C2": (9.9, 21.7, 0), "C3": (9.9, 23.6, 0),
     "U1": (7.6, 26.0, 0), "L1": (11.4, 26.4, 270), "C4": (10.6, 29.4, 0), "C5": (10.6, 31.4, 0),
     "R2": (3.7, 25.2, 180), "R3": (3.7, 26.7, 180), "R4": (3.7, 28.2, 180),
-    # battery measurement + VSENS switch
+    # battery measurement + VSENS load switch
     "Q2": (16.6, 21.0, 0), "R5": (13.7, 21.0, 90), "Q3": (16.6, 25.4, 0), "R6": (13.7, 25.4, 270),
     "R7": (20.2, 21.0, 0), "R8": (22.8, 22.6, 270), "C6": (24.4, 22.6, 270),
     "Q4": (16.6, 30.0, 0), "R9": (13.7, 30.0, 90), "C7": (20.1, 30.0, 0),
-    # UI
-    "SW1": (5.0, 38.0, 0), "R21": (10.8, 36.1, 180), "C21": (10.8, 37.9, 0),
-    "SW2": (5.0, 45.0, 0), "C12": (10.8, 43.1, 0),
+    # programming header (right edge), button, test points
+    "J1": (33.5, 20.0, 0),
+    "SW1": (5.0, 37.4, 0), "R21": (10.8, 36.1, 180), "C21": (10.8, 37.9, 0),
     "TP1": (13.8, 34.6, 0), "TP2": (16.0, 34.6, 0), "TP3": (18.2, 34.6, 0), "TP4": (16.0, 37.0, 0),
-    "J1": (4.11, 50.0, 90),
-    # SHT40 thermal island (slot x 20.0..20.8, y 33..46)
-    "R19": (23.6, 35.0, 0), "R20": (23.6, 36.6, 0), "U4": (23.6, 39.5, 0), "C20": (23.6, 42.6, 0),
-    # reverse polarity + battery
-    "R1": (5.6, 53.65, 180), "Q1": (9.0, 54.6, 0),
-    "BT1": (13.7, 79.0, 90),
-    # probe front-end (just above the soil line)
-    "C14": (2.6, 103.8, 90), "R12": (2.6, 107.0, 90), "U3": (8.0, 107.0, 0),
-    "C15": (13.2, 105.0, 270), "C13": (13.2, 108.9, 270),
-    "R18": (19.0, 105.0, 0), "C19": (19.0, 106.8, 180), "TP5": (24.6, 109.4, 0),
-    "C18": (19.0, 110.8, 0), "R17": (19.0, 112.6, 0), "R16": (16.4, 114.2, 90),
-    "R13": (6.0, 111.8, 0), "R14": (6.0, 113.6, 0), "R15": (10.0, 115.4, 270),
-    "D1": (13.0, 117.6, 180), "C17": (16.4, 117.6, 270), "TP6": (7.4, 117.4, 0),
-    "H1": (2.6, 118.0, 0), "H2": (23.4, 118.0, 0),
-    "PRB1": (13.0, SOIL_Y, 0),
-    "RT1": (21.6, 173.0, 270),
+    # battery input (left edge): JST-PH + 2 solder pads, reverse-polarity P-FET
+    "J2": (5.0, 45.0, 180), "J3": (7.0, 50.8, 180),
+    "Q1": (10.8, 46.5, 180), "R1": (13.9, 48.4, 90),
+    # sensor module connectors along the bottom edge (all cables leave on one side)
+    "J4": (10.0, 56.5, 0), "J7": (19.0, 56.5, 0), "J6": (25.6, 57.5, 90),
+    # ESD + analog front-end + I2C pull-ups
+    "U3": (22.0, 49.6, 90),
+    "R12": (17.6, 48.2, 90), "C13": (17.6, 45.0, 90),
+    "R18": (25.4, 47.0, 90), "C19": (25.4, 43.8, 90), "C14": (21.4, 44.0, 90),
+    "R20": (27.2, 47.0, 90), "R19": (28.9, 50.4, 90), "C20": (27.2, 50.4, 90),
+    # M3 mounting holes (no tracks / vias under the screw heads)
+    "H1": (3.8, 56.5, 0), "H2": (32.3, 44.5, 0),
 }
 
-OUTLINE = [(0, 0), (W, 0), (W, 120), (23, SOIL_Y), (23, 200), (13, 212), (3, 200), (3, SOIL_Y), (0, 120)]
-SLOT = (20.0, 33.0, 20.8, 46.0)      # SHT40 thermal isolation slot (x1, y1, x2, y2)
+OUTLINE = [(1, 0), (W - 1, 0), (W, 1), (W, H - 1), (W - 1, H), (1, H), (0, H - 1), (0, 1)]
+
+# silkscreen labels: (text, x, y, size, angle, justify) on F.SilkS
+LABELS = [
+    ("BAT", 2.0, 41.0, 0.8, 0, "left"),
+    ("-", 2.7, 48.3, 1.0, 0, "center"), ("+", 6.0, 48.3, 1.0, 0, "center"),
+    ("BOOT", 5.0, 33.8, 0.8, 0, "center"),
+    ("LED", 33.4, 3.4, 0.8, 0, "center"),
+    ("SOIL", 12.0, 50.4, 0.8, 0, "center"),
+    ("GND", 10.0, 52.6, 0.8, 90, "center"), ("VCC", 12.0, 52.6, 0.8, 90, "center"),
+    ("AOUT", 14.0, 52.6, 0.8, 90, "center"),
+    ("NTC", 20.0, 53.4, 0.8, 0, "center"),
+    ("I2C", 31.5, 50.9, 0.8, 0, "center"),
+    ("VCC", 25.6, 54.3, 0.8, 90, "center"), ("GND", 28.14, 54.3, 0.8, 90, "center"),
+    ("SCL", 30.68, 54.3, 0.8, 90, "center"), ("SDA", 33.22, 54.3, 0.8, 90, "center"),
+]
+FULL_ZONE_PADS = {("J1", "2")}
+J1_LABELS = ["3V3", "GND", "TX", "RX", "EN", "IO9", "D-", "D+"]
 
 NETCLASSES = {
     "Default": dict(track=0.2, clearance=0.2),
@@ -87,8 +103,7 @@ NETCLASSES = {
 NET_TO_CLASS = {
     "+3V3": "Power", "VBAT": "Power", "VBAT_RAW": "Power", "VIN_BB": "Power", "LX1": "Power", "LX2": "Power",
     "VSENS": "Power", "GND": "Power",
-    "PROBE_SENSE": "Analog", "PROBE_EXC": "Analog", "PROBE_DET": "Analog", "OSC_OUT": "Analog",
-    "SOIL_ADC": "Analog", "NTC_ADC": "Analog",
+    "SOIL_AOUT": "Analog", "SOIL_ADC": "Analog", "NTC_ADC": "Analog", "VBAT_ADC": "Analog",
 }
 
 
@@ -171,7 +186,7 @@ def add_segment(board, a, b, layer, width=0.1):
     board.Add(s)
 
 
-def add_text(board, txt, x, y, layer, size=1.0, angle=0, mirrored=False, bold=False):
+def add_text(board, txt, x, y, layer, size=1.0, angle=0, mirrored=False, bold=False, justify="center"):
     t = pcbnew.PCB_TEXT(board)
     t.SetText(txt)
     t.SetPosition(P(x, y))
@@ -182,6 +197,10 @@ def add_text(board, txt, x, y, layer, size=1.0, angle=0, mirrored=False, bold=Fa
         t.SetTextAngleDegrees(angle)
     if mirrored:
         t.SetMirrored(True)
+    if justify == "left":
+        t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
+    elif justify == "right":
+        t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_RIGHT)
     board.Add(t)
 
 
@@ -197,15 +216,38 @@ def add_track(board, net, pts, layer=pcbnew.F_Cu, width=0.25):
         board.Add(t)
 
 
+def check_placement(comps):
+    """Courtyard overlap / board-edge check (module antenna overhang is intended)."""
+    boxes = {}
+    for ref, c in sorted(comps.items()):
+        x, y, r = PLACE[ref]
+        boxes[ref] = fpinfo.placed_bbox(c["footprint"], x, y, r)
+    bad = 0
+    refs = sorted(boxes)
+    for i, a in enumerate(refs):
+        ax1, ay1, ax2, ay2 = boxes[a]
+        if a != "U2" and (ax1 < 0 or ay1 < 0 or ax2 > W or ay2 > H):
+            print(f"  outside board: {a} {tuple(round(v, 2) for v in boxes[a])}")
+            bad += 1
+        for b in refs[i + 1:]:
+            bx1, by1, bx2, by2 = boxes[b]
+            ox, oy = min(ax2, bx2) - max(ax1, bx1), min(ay2, by2) - max(ay1, by1)
+            if ox > 0.01 and oy > 0.01:
+                print(f"  courtyard overlap {a} / {b}: {ox:.2f} x {oy:.2f} mm")
+                bad += 1
+    print("placement check:", "OK" if not bad else f"{bad} problems")
+    return bad
+
+
 def build(comps, nets):
     board = pcbnew.NewBoard(PCB_PATH)
     setup_design_rules(board)
     tb = board.GetTitleBlock()
-    tb.SetTitle("H2 Soil Sensor - Matter over Thread (ESP32-H2, CR123A)")
-    tb.SetRevision("1.0")
-    tb.SetDate("2026-11-11")
+    tb.SetTitle("H2 Soil Sensor v2 - ESP32-H2 carrier for sensor modules (Matter over Thread)")
+    tb.SetRevision("2.0")
+    tb.SetDate("2026-11-12")
     tb.SetCompany("H2 Soil Sensor")
-    tb.SetComment(0, "2-layer FR4 1.6mm, HASL/ENIG, green mask; probe: conformal coat")
+    tb.SetComment(0, "2-layer FR4 1.6mm 36x60mm, HASL/ENIG, green mask; module antenna overhangs top edge")
     netinfo = {}
     for name in sorted(nets):
         ni = pcbnew.NETINFO_ITEM(board, name)
@@ -233,7 +275,7 @@ def build(comps, nets):
         if c["dnp"]:
             attrs |= pcbnew.FP_EXCLUDE_FROM_BOM | pcbnew.FP_EXCLUDE_FROM_POS_FILES
             fp.SetProperty("DNP", "DNP")
-        if ref.startswith("PRB") or ref.startswith("H") or ref.startswith("TP"):
+        if ref.startswith("H") or ref.startswith("TP") or ref == "J3":
             attrs |= pcbnew.FP_EXCLUDE_FROM_BOM | pcbnew.FP_EXCLUDE_FROM_POS_FILES
         fp.SetAttributes(attrs)
         board.Add(fp)
@@ -248,39 +290,29 @@ def build(comps, nets):
         fp.Reference().SetPosition(fp.GetPosition())
         fp.Value().SetVisible(False)
         for pad in fp.Pads():
-            if (ref in ("U1", "U2") and pad.HasHole()) or ref == "PRB1":
+            if ref in ("U1", "U2") and pad.HasHole():
+                pad.SetZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
+            if (ref, pad.GetNumber()) in FULL_ZONE_PADS:   # crowded GND pads: solid zone connection
                 pad.SetZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
 
-    # outline + slot
+    # outline (chamfered rectangle)
     pts = OUTLINE + [OUTLINE[0]]
     for a, b in zip(pts, pts[1:]):
         add_segment(board, a, b, pcbnew.Edge_Cuts, 0.1)
-    x1, y1, x2, y2 = SLOT
-    for a, b in [((x1, y1), (x2, y1)), ((x2, y1), (x2, y2)), ((x2, y2), (x1, y2)), ((x1, y2), (x1, y1))]:
-        add_segment(board, a, b, pcbnew.Edge_Cuts, 0.1)
 
-    # silkscreen
-    add_segment(board, (3.4, SOIL_Y), (22.6, SOIL_Y), pcbnew.F_SilkS, 0.2)
-    add_text(board, "SOIL LINE / MAT DAT", 13, SOIL_Y - 1.0, pcbnew.F_SilkS, 0.8)
-    add_text(board, "CONFORMAL COAT", 13, 150, pcbnew.F_SilkS, 1.2, angle=90)
-    add_text(board, "H2 SOIL SENSOR  Matter/Thread  rev1.0", 13, 150, pcbnew.B_SilkS, 1.2, angle=90, mirrored=True)
-    add_text(board, "BOOT", 5.0, 41.5, pcbnew.F_SilkS, 0.8)
-    add_text(board, "RST", 11.0, 45.4, pcbnew.F_SilkS, 0.8)
-    add_text(board, "SHT40", 23.4, 44.9, pcbnew.F_SilkS, 0.8)
-    for i, lab in enumerate(["3V3", "GND", "TX", "RX", "EN", "IO9", "D-", "D+"]):
-        add_text(board, lab, 4.11 + 2.54 * i, 47.6, pcbnew.B_SilkS, 0.8, mirrored=True)
-    add_text(board, "J1", 1.2, 50.0, pcbnew.F_SilkS, 0.8, angle=90)
-    add_text(board, "LED", 23.6, 18.6, pcbnew.F_SilkS, 0.8)
-    add_text(board, "ANTENNA ->", 13, -1.0, pcbnew.F_Fab, 0.8)
-
-    # ---------------------------------------------------------------- hand routes (analog)
-    sense = netinfo["PROBE_SENSE"]
-    add_track(board, sense, [(10.0, 116.225), (10.0, 117.6), (11.95, 117.6)])
-    add_track(board, sense, [(11.95, 117.6), (11.95, 120.0), (13.0, 121.05), (13.0, 129.0)])
-    ntc = netinfo["NTC_ADC"]
-    add_track(board, ntc, [(19.825, 106.8), (21.9, 108.875), (21.9, 171.5), (21.6, 171.8), (21.6, 172.175)],
-              width=0.25)
-    add_track(board, netinfo["GND"], [(21.6, 173.825), (20.3, 173.825)], width=0.3)
+    # silkscreen: user-facing labels only
+    for txt, x, y, size, ang, just in LABELS:
+        add_text(board, txt, x, y, pcbnew.F_SilkS, size, angle=ang, justify=just)
+    jx, jy, _ = PLACE["J1"]
+    add_text(board, "PROG", jx, jy - 2.6, pcbnew.F_SilkS, 0.8)
+    for i, lab in enumerate(J1_LABELS):
+        add_text(board, lab, jx - 1.6, jy + 2.54 * i, pcbnew.F_SilkS, 0.8, justify="right")
+    for txt, y, size, bold in (("H2 SOIL SENSOR v2.0", 23.5, 1.2, True), ("Matter over Thread", 25.7, 1.0, False),
+                               ("ESP32-H2 + CR123A", 27.7, 1.0, False), ("SOIL: GND VCC AOUT", 30.2, 0.8, False),
+                               ("I2C: VCC GND SCL SDA", 31.7, 0.8, False), ("NTC: 10k B3950", 33.2, 0.8, False),
+                               ("BAT 2.0-3.3V, reverse protected", 34.7, 0.8, False)):
+        add_text(board, txt, 16.0, y, pcbnew.B_SilkS, size, mirrored=True, bold=bold)
+    add_text(board, "^ ANTENNA (no metal) ^", 18.0, -1.0, pcbnew.F_Fab, 0.8)
 
     # ---------------------------------------------------------------- TPS63900 power stage (short loops)
     vin, lx1, lx2, v33, gnd = (netinfo[n] for n in ("VIN_BB", "LX1", "LX2", "+3V3", "GND"))
@@ -301,16 +333,22 @@ def build(comps, nets):
 
 
 def main():
-    write_project_rules()
+    if os.environ.get("PYTHONHASHSEED") != "0":   # deterministic routing (set/dict order)
+        os.execve(sys.executable, [sys.executable] + sys.argv, dict(os.environ, PYTHONHASHSEED="0"))
     comps, nets = read_netlist()
+    if check_placement(comps) and "--force" not in sys.argv:
+        raise SystemExit("fix placement first (or --force)")
+    if "--check" in sys.argv:
+        return
+    write_project_rules()
     board = build(comps, nets)
     board = pcbnew.LoadBoard(PCB_PATH)   # reload so project net classes apply
-    stats = router.route_board(board, origin=(X0, Y0), width=W, route_ymax=SOIL_Y - 1.0,
-                               netclasses=NETCLASSES, net_to_class=NET_TO_CLASS)
+    stats = router.route_board(board, origin=(X0, Y0), width=W, route_ymax=H,
+                               netclasses=NETCLASSES, net_to_class=NET_TO_CLASS, outline=OUTLINE, slot=())
     print("router:", stats)
-    router.finish_ground(board, origin=(X0, Y0), soil_y=SOIL_Y, slot=SLOT)
+    router.finish_ground(board, origin=(X0, Y0), rect=(-1.0, -1.0, W + 1.0, H + 1.0))
     pcbnew.SaveBoard(PCB_PATH, board)
-    txt = open(PCB_PATH, encoding="utf-8").read().replace('(paper "A4")', '(paper "A3" portrait)', 1)
+    txt = open(PCB_PATH, encoding="utf-8").read().replace('(paper "A4")', '(paper "A4" portrait)', 1)
     open(PCB_PATH, "w", encoding="utf-8").write(txt)
     board = pcbnew.LoadBoard(PCB_PATH)
     rpt = os.path.join(HW, "docs", "drc_report.txt")

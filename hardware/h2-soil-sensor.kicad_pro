@@ -276,19 +276,7 @@
       },
       {
         "netclass": "Analog",
-        "pattern": "PROBE_SENSE"
-      },
-      {
-        "netclass": "Analog",
-        "pattern": "PROBE_EXC"
-      },
-      {
-        "netclass": "Analog",
-        "pattern": "PROBE_DET"
-      },
-      {
-        "netclass": "Analog",
-        "pattern": "OSC_OUT"
+        "pattern": "SOIL_AOUT"
       },
       {
         "netclass": "Analog",
@@ -297,6 +285,10 @@
       {
         "netclass": "Analog",
         "pattern": "NTC_ADC"
+      },
+      {
+        "netclass": "Analog",
+        "pattern": "VBAT_ADC"
       }
     ]
   },

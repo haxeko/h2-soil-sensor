@@ -208,61 +208,6 @@
       )
     )
   )
-  (symbol "SoilProbe_Capacitive"
-    (pin_names (offset 0) hide)
-    (in_bom no)
-    (on_board yes)
-    (property "Reference" "PRB" (at 0 5.08 0) (effects (font (size 1.27 1.27))))
-    (property "Value" "SoilProbe_Capacitive" (at 0 -5.08 0) (effects (font (size 1.27 1.27))))
-    (property "Footprint" "h2soil:SoilProbe_Capacitive_80mm"
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) hide))
-    (property "ki_description" "PCB-printed capacitive soil probe: SENSE electrode vs GND electrodes (covered by solder mask + conformal coating)"
-      (at 0 0 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (symbol "SoilProbe_Capacitive_0_1"
-      (rectangle (start -2.54 3.81) (end 2.54 -3.81) (stroke (width 0.254) (type default)) (fill (type none)))
-      (polyline
-        (pts (xy -1.524 2.54) (xy -1.524 -2.54))
-        (stroke (width 0.508) (type default))
-        (fill (type none))
-      )
-      (polyline
-        (pts (xy 1.524 2.54) (xy 1.524 -2.54))
-        (stroke (width 0.508) (type default))
-        (fill (type none))
-      )
-      (polyline
-        (pts (xy -0.762 1.27) (xy -0.254 1.778) (xy 0.254 0.762) (xy 0.762 1.27))
-        (stroke (width 0) (type default))
-        (fill (type none))
-      )
-      (polyline
-        (pts (xy -0.762 -0.508) (xy -0.254 0) (xy 0.254 -1.016) (xy 0.762 -0.508))
-        (stroke (width 0) (type default))
-        (fill (type none))
-      )
-    )
-    (symbol "SoilProbe_Capacitive_1_1"
-      (pin passive line
-        (at -5.08 0 0)
-        (length 2.54)
-        hide
-        (name "SENSE" (effects (font (size 1.27 1.27))))
-        (number "1" (effects (font (size 1.27 1.27))))
-      )
-      (pin passive line
-        (at 5.08 0 180)
-        (length 2.54)
-        hide
-        (name "GND" (effects (font (size 1.27 1.27))))
-        (number "2" (effects (font (size 1.27 1.27))))
-      )
-    )
-  )
   (symbol "VBAT"
     (power)
     (pin_names (offset 0))

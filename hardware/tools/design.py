@@ -1,4 +1,10 @@
-"""Single source of truth for the H2 soil sensor schematic.
+"""Single source of truth for the H2 soil sensor schematic (v2: carrier board).
+
+v2 = ESP32-H2 + CR123A power board; the sensors are popular off-the-shelf modules
+connected by cable: capacitive soil moisture module (v1.2/v2.0, analog, JST-PH 3P),
+I2C T/RH module (SHT4x / SHT3x / AHT20, 1x4 2.54 mm header), optional waterproof
+10k NTC probe (JST-PH 2P). The battery (CR123A holder with leads) connects to two
+terminals: JST-PH 2P or two solder pads.
 
 Every component lists: sheet, reference, library symbol, value, footprint,
 LCSC part number, schematic position (mm, A3 sheet) / rotation and the
@@ -24,7 +30,7 @@ SHEETS = [
     dict(name="MCU", file="mcu.kicad_sch", page="3",
          title="MCU: ESP32-H2-WROOM-02C (Thread ICD)"),
     dict(name="Sensors", file="sensors.kicad_sch", page="4",
-         title="Sensors: capacitive probe, soil NTC, SHT40"),
+         title="Sensor connectors: soil module, I2C module, NTC probe"),
     dict(name="UI", file="ui.kicad_sch", page="5",
          title="UI: button, LED, prog header, test points"),
 ]
@@ -86,17 +92,22 @@ def FLAG(sheet, ref, x, y, net):
 
 PW, MC, SE, UI = "Power", "MCU", "Sensors", "UI"
 
+PH2 = "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical"
+PH3 = "Connector_JST:JST_PH_B3B-PH-K_1x03_P2.00mm_Vertical"
+
 COMPONENTS = [
     # ===================================================================== POWER
-    # --- battery + reverse polarity protection (P-MOSFET, ideal-diode style)
-    P(PW, "BT1", "Device", "Battery_Cell", "CR123A 3V Li-MnO2", "h2soil:BatteryHolder_MYOUNG_BH-123A-A1CJ002",
-      "C5290177", "BH-123A-A1CJ002", "MYOUNG", 30.48, 76.2, 0, {"1": "VBAT_RAW", "2": "GND"},
-      note="Gia pin CR123A (THT). Pin 1 = +"),
+    # --- battery terminals: JST-PH 2P (holder with lead) or two solder pads (wires soldered directly)
+    P(PW, "J2", "Connector", "Conn_01x02_Pin", "BAT (PH2.0)", PH2, "C131337", "B2B-PH-K-S(LF)(SN)", "JST",
+      22.86, 63.5, 0, {"1": "VBAT_RAW", "2": "GND"},
+      note="Pin 1 = BAT+ (phan cuc connector pin JST khong thong nhat giua cac hang -> co Q1 chong nguoc)"),
+    P(PW, "J3", "Connector", "Conn_01x02_Pin", "BAT (pads)", "Connector_Wire:SolderWire-0.5sqmm_1x02_P4.6mm_D0.9mm_OD2.1mm",
+      "", "", "", 22.86, 83.82, 0, {"1": "VBAT_RAW", "2": "GND"}, note="2 pad han day pin (+ / -), song song J2"),
     P(PW, "Q1", "Transistor_FET", "AO3401A", "AO3415A", SOT23, "C133233", "AO3415A", "AOS",
       66.04, 63.5, 90, {"1": "Q1_G", "2": "VBAT", "3": "VBAT_RAW"},
       note="P-MOSFET chong nguoc cuc, Vgs(th)<=1V, Rds(on) thap o Vgs=-1.8V"),
     R(PW, "R1", "100k", 66.04, 88.9, 0, "Q1_G", "GND", note="Gate Q1 ve GND"),
-    C(PW, "C1", "47uF 6.3V", 91.44, 76.2, 0, "VBAT", "GND", note="Tu dem xung TX (pin lanh)"),
+    C(PW, "C1", "47uF 6.3V", 91.44, 76.2, 0, "VBAT", "GND", note="Tu dem xung TX (pin lanh, day pin dai)"),
     R(PW, "R10", "0R", 111.76, 63.5, 90, "VBAT", "VIN_BB", note="Cau do dong (thao ra de gan ampe ke/PPK2)"),
 
     # --- TPS63900 buck-boost, VOUT = 3.3 V (SEL = low -> VO(1) = RCFG3 = 16.2k)
@@ -127,7 +138,7 @@ COMPONENTS = [
     R(PW, "R8", "100k", 368.3, 78.74, 0, "VBAT_ADC", "GND"),
     C(PW, "C6", "10nF", 383.54, 78.74, 0, "VBAT_ADC", "GND"),
 
-    # --- switched sensor rail VSENS (TLC555, NTC, SHT40, I2C pull-ups)
+    # --- switched sensor rail VSENS (soil module, I2C module + pull-ups, NTC divider)
     P(PW, "Q4", "Transistor_FET", "AO3401A", "AO3401A", SOT23, "C15127", "AO3401A", "AOS",
       309.88, 170.18, 90, {"1": "SENS_PWR_EN_N", "2": "+3V3", "3": "VSENS"}, note="Load switch VSENS (active-low)"),
     R(PW, "R9", "100k", 294.64, 195.58, 0, "+3V3", "SENS_PWR_EN_N", note="Keo gate len 3V3 -> VSENS OFF mac dinh"),
@@ -143,7 +154,7 @@ COMPONENTS = [
       "", "ESP32-H2-WROOM-02C-H4S", "Espressif", 210.82, 129.54, 0,
       {"1": "+3V3", "2": "EN", "14": "NC", "7": "IO8", "8": "BOOT_BTN", "20": "NC",
        "21": "U0RXD", "22": "U0TXD", "23": "USB_DN", "24": "USB_DP", "11": "XTAL32_P", "12": "XTAL32_N",
-       "28": "LED", "27": "SOIL_ADC", "26": "VBAT_ADC", "25": "NTC_ADC", "3": "PROBE_EXC_MCU", "4": "NC",
+       "28": "LED", "27": "SOIL_ADC", "26": "VBAT_ADC", "25": "NTC_ADC", "3": "NC", "4": "NC",
        "5": "SENS_PWR_EN_N", "6": "VBAT_MEAS_EN", "10": "I2C_SDA", "15": "I2C_SCL",
        "16": "NC", "17": "NC", "18": "NC", "19": "NC", "9": "GND", "13": "GND", "29": "GND"},
       note="Module 4MB flash (H4S) de co OTA Matter. Khong co trong BOM lap rap"),
@@ -157,43 +168,32 @@ COMPONENTS = [
     C(MC, "C10", "18pF C0G", 50.8, 182.88, 0, "XTAL32_P", "GND", dnp=True),
     C(MC, "C11", "18pF C0G", 71.12, 182.88, 0, "XTAL32_N", "GND", dnp=True),
 
-    # =================================================================== SENSORS
-    # --- TLC555 astable ~0.5-0.7 MHz, 50% duty (OUT -> R12 -> TR/THR, C14)
-    P(SE, "U3", "Timer", "TLC555xD", "TLC555IDR", "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm", "C6987", "TLC555IDR",
-      "Texas Instruments", 93.98, 99.06, 0,
-      {"1": "GND", "8": "VSENS", "2": "OSC_RC", "3": "OSC_OUT", "4": "VSENS", "5": "OSC_CV", "6": "OSC_RC",
-       "7": "NC"}, note="Ban I (-40..85C) cho ngoai troi"),
-    R(SE, "R12", "10k", 139.7, 76.2, 90, "OSC_OUT", "OSC_RC", note="RT"),
-    C(SE, "C14", "100pF C0G", 152.4, 109.22, 0, "OSC_RC", "GND", note="CT (C0G!)"),
-    C(SE, "C13", "10nF", 55.88, 121.92, 0, "OSC_CV", "GND"),
-    C(SE, "C15", "100nF", 124.46, 63.5, 0, "VSENS", "GND", note="Decoupling TLC555"),
-    R(SE, "R13", "0R", 177.8, 76.2, 90, "OSC_OUT", "PROBE_EXC", note="Chon kich thich: TLC555 (mac dinh)"),
-    R(SE, "R14", "0R", 177.8, 96.52, 90, "PROBE_EXC_MCU", "PROBE_EXC", dnp=True,
-      note="Chon kich thich: LEDC tu GPIO4 (thao R13 + U3)"),
-    R(SE, "R15", "10k", 228.6, 76.2, 90, "PROBE_EXC", "PROBE_SENSE", note="RS: R noi tiep voi C dau do"),
-    P(SE, "PRB1", "h2soil", "SoilProbe_Capacitive", "SoilProbe 80mm", "h2soil:SoilProbe_Capacitive_80mm",
-      "", "", "", 271.78, 109.22, 0, {"1": "PROBE_SENSE", "2": "GND"}, note="Dien cuc in tren PCB, khong co trong BOM"),
-    P(SE, "D1", "Device", "D", "1N4148WS", "Diode_SMD:D_SOD-323", "C2128", "1N4148WS", "Changjiang",
-      271.78, 76.2, 180, {"2": "PROBE_SENSE", "1": "PROBE_DET"}, note="Tach dinh (Ir thap)"),
-    C(SE, "C17", "10nF", 299.72, 91.44, 0, "PROBE_DET", "GND", note="Tu giu dinh"),
-    R(SE, "R16", "470k", 320.04, 76.2, 90, "PROBE_DET", "SOIL_ADC", note="Chia 1/2 + xa tu"),
-    R(SE, "R17", "470k", 340.36, 91.44, 0, "SOIL_ADC", "GND"),
-    C(SE, "C18", "10nF", 355.6, 91.44, 0, "SOIL_ADC", "GND", note="Loc + nguon cho ADC sample"),
-
-    # --- soil temperature NTC (on the probe, VSENS-fed so no sleep leakage)
-    R(SE, "R18", "10k", 60.96, 190.5, 0, "VSENS", "NTC_ADC", note="1% (do ti le)"),
-    P(SE, "RT1", "Device", "Thermistor_NTC", "10k B3380", R0603, "C13564", "NCP18XH103F03RB", "Murata",
-      60.96, 215.9, 0, {"1": "NTC_ADC", "2": "GND"}, note="Dat tren than que, trong vung dat"),
-    C(SE, "C19", "100nF", 76.2, 215.9, 0, "NTC_ADC", "GND"),
-
-    # --- SHT40 (air T/RH) on switched rail, I2C pull-ups to VSENS
-    P(SE, "U4", "Sensor_Humidity", "SHT4x", "SHT40-AD1F-R2",
-      "Sensor_Humidity:Sensirion_DFN-4_1.5x1.5mm_P0.8mm_SHT4x_NoCentralPad", "C7461846", "SHT40-AD1F-R2",
-      "Sensirion", 271.78, 205.74, 0, {"1": "I2C_SDA", "2": "I2C_SCL", "3": "VSENS", "4": "GND"},
-      note="Ban -AD1F co mang PTFE (IP67). Tuy chon (co the khong lap)"),
-    R(SE, "R19", "10k", 210.82, 190.5, 0, "VSENS", "I2C_SDA"),
-    R(SE, "R20", "10k", 226.06, 190.5, 0, "VSENS", "I2C_SCL"),
-    C(SE, "C20", "100nF", 299.72, 193.04, 0, "VSENS", "GND"),
+    # =========================================================== SENSOR CONNECTORS
+    # --- capacitive soil moisture module v1.2 / v2.0 (TLC555 + PCB probe), PH2.0-3P: GND, VCC, AOUT
+    P(SE, "J4", "Connector", "Conn_01x03_Pin", "SOIL (PH2.0)", PH3, "C131339", "B3B-PH-K-S(LF)(SN)", "JST",
+      50.8, 76.2, 0, {"1": "GND", "2": "VSENS", "3": "SOIL_AOUT"},
+      note="Module do am dat dien dung v1.2/v2.0 (3.3-5.5V, AOUT 0-3V). Kiem tra thu tu day!"),
+    R(SE, "R12", "1k", 121.92, 81.28, 90, "SOIL_AOUT", "SOIL_ADC", note="Han dong ESD/qua ap vao chan ADC"),
+    C(SE, "C13", "10nF", 139.7, 93.98, 0, "SOIL_ADC", "GND", note="Loc + nguon cho ADC sample"),
+    # --- waterproof NTC 10k probe (optional), PH2.0-2P
+    P(SE, "J7", "Connector", "Conn_01x02_Pin", "NTC (PH2.0)", PH2, "C131337", "B2B-PH-K-S(LF)(SN)", "JST",
+      50.8, 147.32, 0, {"1": "NTC_ADC", "2": "GND"}, note="Dau do NTC 10k chong nuoc (B3950) - tuy chon"),
+    R(SE, "R18", "10k", 121.92, 134.62, 0, "VSENS", "NTC_ADC", note="1% (do ti le)"),
+    C(SE, "C19", "100nF", 139.7, 160.02, 0, "NTC_ADC", "GND"),
+    # --- I2C T/RH module (SHT4x / SHT3x / AHT20 breakout), 1x4 2.54 mm: VCC, GND, SCL, SDA
+    P(SE, "J6", "Connector", "Conn_01x04_Pin", "I2C (2.54)", "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical",
+      "C2691448", "PZ254V-11-04P", "XFCN", 223.52, 76.2, 0,
+      {"1": "VSENS", "2": "GND", "3": "I2C_SCL", "4": "I2C_SDA"},
+      note="Thu tu chan nhu module GY-SHT31/SHT40/AHT20: VIN GND SCL SDA"),
+    R(SE, "R19", "10k", 271.78, 93.98, 0, "VSENS", "I2C_SDA", note="Pull-up (module thuong da co 10k)"),
+    R(SE, "R20", "10k", 287.02, 93.98, 0, "VSENS", "I2C_SCL"),
+    C(SE, "C20", "100nF", 302.26, 93.98, 0, "VSENS", "GND"),
+    C(SE, "C14", "10uF 10V", 317.5, 93.98, 0, "VSENS", "GND", note="Dem cho module (~5 mA, LDO 662K)"),
+    # --- ESD protection of every line that leaves the enclosure (clamps to VSENS, 0 leakage when off)
+    P(SE, "U3", "Power_Protection", "SRV05-4", "SRV05-4", "Package_TO_SOT_SMD:SOT-23-6", "C13612", "SRV05-4.TCT",
+      "Semtech", 248.92, 160.02, 0,
+      {"1": "SOIL_AOUT", "3": "NTC_ADC", "4": "I2C_SDA", "6": "I2C_SCL", "2": "GND", "5": "VSENS"},
+      note="TVS 4 kenh cho day cam bien ra ngoai hop (thay the re: C558418)"),
 
     # ======================================================================== UI
     P(UI, "SW1", "Switch", "SW_Push", "BOOT/USER", "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A", "C318884",
@@ -201,8 +201,6 @@ COMPONENTS = [
       note="IO9: nhan=commissioning/do ngay, 2 lan=hieu chuan kho, 3 lan=uot, giu 10s=factory reset"),
     R(UI, "R21", "10k", 50.8, 63.5, 0, "+3V3", "BOOT_BTN", note="Keo len (strapping IO9 = 1 -> SPI boot)"),
     C(UI, "C21", "100nF", 101.6, 93.98, 0, "BOOT_BTN", "GND", note="Chong doi phim"),
-    P(UI, "SW2", "Switch", "SW_Push", "RESET", "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A", "C318884",
-      "TS-1187A-B-A-B", "XKB", 71.12, 127.0, 0, {"1": "EN", "2": "GND"}, dnp=True, note="Tuy chon"),
     P(UI, "D2", "Device", "LED", "RED", "LED_SMD:LED_0603_1608Metric", "C2286", "KT-0603R", "Hubei KENTO",
       195.58, 81.28, 180, {"2": "LED_A", "1": "GND"}, note="LED trang thai (chi nhay khi can)"),
     R(UI, "R22", "1k", 172.72, 81.28, 90, "LED", "LED_A", note="~1.5 mA"),
@@ -218,13 +216,9 @@ COMPONENTS = [
       312.42, 68.58, 0, {"1": "GND"}),
     P(UI, "TP4", "Connector", "TestPoint", "VSENS", "TestPoint:TestPoint_Pad_D1.0mm", "", "", "",
       330.2, 68.58, 0, {"1": "VSENS"}),
-    P(UI, "TP5", "Connector", "TestPoint", "SOIL", "TestPoint:TestPoint_Pad_D1.0mm", "", "", "",
-      276.86, 99.06, 0, {"1": "SOIL_ADC"}),
-    P(UI, "TP6", "Connector", "TestPoint", "PROBE", "TestPoint:TestPoint_Pad_D1.0mm", "", "", "",
-      299.72, 99.06, 0, {"1": "PROBE_EXC"}),
-    P(UI, "H1", "Mechanical", "MountingHole", "M2", "MountingHole:MountingHole_2.2mm_M2", "", "", "",
+    P(UI, "H1", "Mechanical", "MountingHole", "M3", "MountingHole:MountingHole_3.2mm_M3", "", "", "",
       276.86, 132.08, 0, {}),
-    P(UI, "H2", "Mechanical", "MountingHole", "M2", "MountingHole:MountingHole_2.2mm_M2", "", "", "",
+    P(UI, "H2", "Mechanical", "MountingHole", "M3", "MountingHole:MountingHole_3.2mm_M3", "", "", "",
       294.64, 132.08, 0, {}),
 ]
 
@@ -232,9 +226,9 @@ COMPONENTS = [
 NOTES = {
     "Power": [
         (20.32, 27.94, "1) PIN + CHONG NGUOC CUC\n"
-                       "Q1 P-MOSFET: D->pin(+), S->tai, G->GND qua R1.\n"
-                       "Lap nguoc pin: Vgs=0, diode than phan cuc nguoc\n"
-                       "-> khong co dong. R10 0R: cau do dong (PPK2)."),
+                       "Pin CR123A (gia co day) noi vao J2 (JST-PH 2P) HOAC han\n"
+                       "vao 2 pad J3. Q1 P-MOSFET: D->pin(+), S->tai, G->GND qua R1.\n"
+                       "Lap nguoc pin: Vgs=0 -> khong co dong. R10 0R: cau do dong."),
         (124.46, 27.94, "2) TPS63900 BUCK-BOOST -> 3.3V (Iq 75nA)\n"
                         "SEL=GND -> VO(1) theo CFG3=16.2k = 3.3V\n"
                         "CFG1=36.5k (VO(2)=3.3V), CFG2=0R: Iin khong gioi han\n"
@@ -243,10 +237,10 @@ NOTES = {
         (284.48, 27.94, "3) DO DIEN AP PIN (khong ro khi ngu)\n"
                         "VBAT_MEAS_EN=1 -> Q3 ON -> Q2 ON -> VBAT/2 -> IO2.\n"
                         "Khi ngu: R6 giu Q3 OFF, R5 giu Q2 OFF."),
-        (284.48, 144.78, "4) CONG TAC NGUON CAM BIEN VSENS\n"
-                         "SENS_PWR_EN_N=0 -> Q4 ON: cap 3.3V cho TLC555,\n"
-                         "NTC, SHT40, pull-up I2C. R9 giu Q4 OFF khi\n"
-                         "GPIO Hi-Z (sleep/reset)."),
+        (284.48, 144.78, "4) CONG TAC NGUON MODULE CAM BIEN VSENS\n"
+                         "SENS_PWR_EN_N=0 -> Q4 ON: cap 3.3V cho module dat,\n"
+                         "module I2C, NTC, pull-up I2C. R9 giu Q4 OFF khi\n"
+                         "GPIO Hi-Z (sleep/reset). Module chi duoc cap nguon khi do."),
         (20.32, 205.74, "PWR_FLAG (cho ERC)"),
     ],
     "MCU": [
@@ -254,22 +248,19 @@ NOTES = {
                        "Module da co RC tren EN (10k/1uF) -> C12 DNP.\n"
                        "Strapping: IO9=1 (R21, sheet UI) -> SPI boot; IO8=1 (R11).\n"
                        "IO10/IO11 la LP GPIO: giu muc khi light-sleep tat mien TOP.\n"
-                       "ADC1: IO1=SOIL, IO2=VBAT, IO3=NTC. IO4: kich thich LEDC (tuy chon)."),
-        (20.32, 233.68, "Anten PCB: module o mep tren cung, vung anten (6mm) nho ra ngoai PCB;\n"
+                       "ADC1: IO1=SOIL (module), IO2=VBAT, IO3=NTC. IO4/IO5/IO25 du phong."),
+        (20.32, 233.68, "Anten PCB: module o mep tren, vung anten (6mm) nho ra ngoai PCB;\n"
                         "khong dong/GND/linh kien duoi va quanh anten; vo hop cach anten >=15mm.\n"
                         "Y1/C10/C11 (DNP): XTAL 32.768kHz tuy chon tren IO13/IO14."),
     ],
     "Sensors": [
-        (20.32, 27.94, "DAU DO DIEN DUNG: TLC555 (ban I) dao dong ~0.5-0.7MHz, duty 50%\n"
-                       "(RT=R12 10k, CT=C14 100pF C0G). OSC_OUT -> R13 -> RS(R15 10k) ->\n"
-                       "dien cuc SENSE (C_dat ~15..250pF so voi GND) -> D1 tach dinh -> C17.\n"
-                       "R16/R17 chia 1/2 vao dai ATTEN2 (0..1.9V). Dat cang uot -> C cang lon\n"
-                       "-> bien do cang nho -> dien ap SOIL_ADC cang THAP."),
-        (20.32, 160.02, "NTC 10k B3380 (RT1) dat tren than que, ~5cm duoi mat dat:\n"
-                        "nhiet do dat + bu nhiet cho dau do. Nuoi tu VSENS (0 ro khi ngu)."),
-        (190.5, 160.02, "SHT40-AD1F (mang PTFE, IP67): nhiet/am khong khi.\n"
-                        "Dat o vung co ranh phay cach nhiet, ho ra qua lo co mang.\n"
-                        "Pull-up I2C noi VSENS: FW dat SDA/SCL Hi-Z truoc khi ngu."),
+        (20.32, 27.94, "KET NOI MODULE CAM BIEN (tat ca nuoi tu VSENS, chi bat khi do)\n"
+                       "J4: module do am dat dien dung v1.2/v2.0 (TLC555), day PH2.0-3P: 1=GND 2=VCC 3=AOUT.\n"
+                       "    Chon module dung TLC555 (NE555 khong chay o 3.3V). AOUT 0-3V -> R12 -> IO1 (ATTEN 12dB).\n"
+                       "J6: module I2C SHT4x/SHT3x/AHT20 (GY-xxx): 1=VIN 2=GND 3=SCL 4=SDA.\n"
+                       "J7: dau do NTC 10k chong nuoc (tuy chon) -> nhiet do dat. U3: TVS cho day ra ngoai hop."),
+        (20.32, 190.5, "Pull-up I2C noi VSENS: firmware dat SDA/SCL Hi-Z (khong pull) truoc khi ngu.\n"
+                       "Neu module I2C co LED nguon, nen go LED de giam dong khi do."),
     ],
     "UI": [
         (20.32, 27.94, "SW1 (IO9/BOOT): 1 lan = do & bao cao ngay / mo commissioning;\n"

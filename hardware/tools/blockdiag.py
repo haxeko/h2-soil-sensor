@@ -30,9 +30,9 @@ def build(uid, fx, eff):
             items.append(["text", QStr(label), ["at", fx((a1 + a2) / 2), fx(min(b1, b2) - 1.0), 0], eff(size=1.27),
                           ["uuid", uid("bdt", key)]])
 
-    items.append(["text", QStr("SO DO KHOI - H2 Soil Sensor (Matter over Thread, ESP32-H2, 1x CR123A)"),
+    items.append(["text", QStr("SO DO KHOI v2 - Bo mach ESP32-H2 + nguon pin, cam bien la module co san (Matter over Thread)"),
                   ["at", 25.4, 22.86, 0], eff(size=2.54, justify="left bottom"), ["uuid", uid("bdtitle")]])
-    box("bat", 25.4, 33.02, 33.02, 15.24, "CR123A 3.0V\nLi-MnO2 ~1500mAh\n(BT1, gia THT)", True)
+    box("bat", 25.4, 33.02, 33.02, 20.32, "CR123A 3.0V\nLi-MnO2 ~1500mAh\n(gia pin co day)\nJ2 JST-PH 2P / J3 pad", True)
     box("rpp", 73.66, 33.02, 33.02, 15.24, "Chong nguoc cuc\nQ1 AO3415A\n(P-MOSFET)")
     box("bb", 121.92, 33.02, 43.18, 15.24, "Buck-boost TPS63900\n1.8-5.5V -> 3.3V\nIq 75nA, >90% @10uA", True)
     box("mcu", 195.58, 33.02, 63.5, 71.12,
@@ -41,11 +41,10 @@ def build(uid, fx, eff):
         "IO11 VBAT_MEAS_EN\nIO12/IO22 I2C SDA/SCL\nIO9  nut BOOT/USER\nIO0  LED\nIO23/24 UART0, IO26/27 USB", True)
     box("vbat", 73.66, 63.5, 43.18, 15.24, "Do pin: Q2/Q3 cong tac\n+ cau chia 1/2\n(0 ro khi ngu)")
     box("lsw", 121.92, 91.44, 43.18, 12.7, "Load switch Q4 (P-FET)\n-> VSENS (chi bat khi do)")
-    box("osc", 25.4, 124.46, 38.1, 15.24, "TLC555I astable\n~0.5-0.7 MHz\n50% duty")
-    box("probe", 76.2, 124.46, 43.18, 15.24, "RS 10k + dien cuc SENSE\nin tren PCB (que 80mm)\nC_dat 15..250 pF")
-    box("det", 132.08, 124.46, 43.18, 15.24, "D1 tach dinh + C17\nchia 1/2 (R16/R17)\n-> ~0.7..1.4 V")
-    box("ntc", 76.2, 152.4, 43.18, 12.7, "NTC 10k B3380\n(nhiet do dat)")
-    box("sht", 132.08, 152.4, 43.18, 12.7, "SHT40-AD1F (I2C)\nnhiet/am khong khi")
+    box("soil", 25.4, 124.46, 50.8, 20.32, "J4 PH2.0-3P ->\nMODULE DO AM DAT DIEN DUNG\nv1.2/v2.0 (TLC555), AOUT 0-3V\n(cam vao dat, day ~1m)")
+    box("i2c", 86.36, 124.46, 50.8, 20.32, "J6 1x4 2.54mm ->\nMODULE I2C NHIET/AM KHONG KHI\nSHT4x / SHT3x / AHT20\n(GY-xxx, Adafruit...)")
+    box("ntc", 147.32, 124.46, 43.18, 20.32, "J7 PH2.0-2P ->\nDAU DO NTC 10k\nchong nuoc (tuy chon)\n-> nhiet do dat")
+    box("esd", 86.36, 152.4, 50.8, 10.16, "U3 SRV05-4: TVS cho 4 day ra ngoai hop")
     box("ui", 274.32, 33.02, 50.8, 25.4, "UI / nap:\nSW1 BOOT/USER (IO9)\nLED do (IO0)\nJ1: UART0 + USB-JTAG")
     box("rf", 274.32, 68.58, 50.8, 20.32, "Anten PCB cua module\nnho ra ngoai mep PCB\nkhong dong ben duoi")
     line("l1", [(58.42, 40.64), (73.66, 40.64)], "VBAT_RAW")
@@ -55,14 +54,14 @@ def build(uid, fx, eff):
     line("l5", [(116.84, 71.12), (195.58, 71.12)], "VBAT_ADC")
     line("l6", [(143.51, 48.26), (143.51, 91.44)])
     line("l7", [(195.58, 99.06), (165.1, 99.06)], "SENS_PWR_EN_N")
-    line("l8", [(143.51, 104.14), (143.51, 116.84), (44.45, 116.84), (44.45, 124.46)], "VSENS")
-    line("l9", [(63.5, 132.08), (76.2, 132.08)])
-    line("l10", [(119.38, 132.08), (132.08, 132.08)])
-    line("l11", [(175.26, 132.08), (185.42, 132.08), (185.42, 88.9), (195.58, 88.9)])
-    line("l12", [(119.38, 158.75), (190.5, 158.75), (190.5, 93.98), (195.58, 93.98)])
-    line("l13", [(175.26, 162.56), (193.04, 162.56), (193.04, 96.52), (195.58, 96.52)])
+    line("l8", [(143.51, 104.14), (143.51, 116.84), (50.8, 116.84), (50.8, 124.46)], "VSENS")
+    line("l8b", [(111.76, 116.84), (111.76, 124.46)])
+    line("l8c", [(167.64, 116.84), (167.64, 124.46)])
+    line("l11", [(50.8, 144.78), (50.8, 170.18), (193.04, 170.18), (193.04, 88.9), (195.58, 88.9)])
+    line("l12", [(167.64, 144.78), (167.64, 165.1), (190.5, 165.1), (190.5, 93.98), (195.58, 93.98)])
+    line("l13", [(137.16, 134.62), (187.96, 134.62), (187.96, 96.52), (195.58, 96.52)])
     line("l14", [(259.08, 45.72), (274.32, 45.72)])
     line("l15", [(259.08, 78.74), (274.32, 78.74)])
-    items.append(["text", QStr("SOIL_ADC / NTC_ADC / I2C"), ["at", 165.1, 114.3, 0], eff(size=1.27),
+    items.append(["text", QStr("SOIL_ADC / NTC_ADC / I2C"), ["at", 165.1, 175.26, 0], eff(size=1.27),
                   ["uuid", uid("bdt", "adc")]])
     return items
