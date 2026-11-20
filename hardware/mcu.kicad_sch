@@ -726,14 +726,14 @@
     (dnp no)
     (uuid ed852954-a628-5834-aca4-67c04b237ede)
     (property "Reference" "C8" (at 53.34 77.47 0) (effects (font (size 1.27 1.27)) (justify left)))
-    (property "Value" "10uF 10V" (at 53.34 80.01 0) (effects (font (size 1.27 1.27)) (justify left)))
-    (property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+    (property "Value" "10uF 25V" (at 53.34 80.01 0) (effects (font (size 1.27 1.27)) (justify left)))
+    (property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
       (at 50.8 78.74 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (at 50.8 78.74 0) (effects (font (size 1.27 1.27)) hide))
-    (property "LCSC" "C19702" (at 50.8 78.74 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "CL10A106KP8NNNC" (at 50.8 78.74 0) (effects (font (size 1.27 1.27)) hide))
+    (property "LCSC" "C15850" (at 50.8 78.74 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "CL21A106KAYNNNE" (at 50.8 78.74 0) (effects (font (size 1.27 1.27)) hide))
     (property "Manufacturer" "Samsung" (at 50.8 78.74 0) (effects (font (size 1.27 1.27)) hide))
     (property "Note" "Sat chan 3V3 module" (at 50.8 78.74 0) (effects (font (size 1.27 1.27)) hide))
     (pin "1" (uuid bcfa2846-2612-5746-a16d-af0b177c20c8))

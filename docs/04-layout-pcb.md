@@ -110,7 +110,7 @@ python3 render.py                 # ảnh minh hoạ render_top/render_bottom/re
 | Độ dày | 1.6 mm |
 | Bề mặt | ENIG nếu dùng kẹp pogo thường xuyên (pad phẳng, không oxy hoá); HASL không chì cũng được |
 | Via | Tented hoặc để hở đều được; tented giúp lớp conformal coating và băng keo mặt dưới phẳng hơn |
-| SMT | Mặt trên: 35 linh kiện / 22 mã theo BOM + CPL trong `hardware/fab/` |
+| SMT | Mặt trên: 35 linh kiện / 21 mã theo BOM + CPL trong `hardware/fab/` |
 | THT | J4 hàn tay (hoặc dịch vụ THT); dây hộp pin hàn vào J3 |
 | Module ESP32-H2 | Hàn reflow 1 lần (MSL3) hoặc consign; hàn tay cần hot-air/bếp gia nhiệt cho EPAD |
 | Pad nạp J1 | Không thêm kem hàn; chỉ tráng thiếc khi muốn hàn dây cố định |

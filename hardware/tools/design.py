@@ -154,7 +154,7 @@ COMPONENTS = [
        "5": "SENS_PWR_EN_N", "6": "VBAT_MEAS_EN", "10": "NC", "15": "NC",
        "16": "NC", "17": "NC", "18": "NC", "19": "NC", "9": "GND", "13": "GND", "29": "GND"},
       note="Module 4MB flash (H4S) de co OTA Matter. Khong co trong BOM lap rap"),
-    C(MC, "C8", "10uF 10V", 50.8, 78.74, 0, "+3V3", "GND", note="Sat chan 3V3 module"),
+    C(MC, "C8", "10uF 25V", 50.8, 78.74, 0, "+3V3", "GND", note="Sat chan 3V3 module"),
     C(MC, "C9", "100nF", 66.04, 78.74, 0, "+3V3", "GND"),
     R(MC, "R11", "10k", 50.8, 114.3, 0, "+3V3", "IO8", note="GPIO8 strapping = 1 (cho phep download mode)"),
 

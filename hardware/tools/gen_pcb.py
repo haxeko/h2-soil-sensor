@@ -47,7 +47,7 @@ def P(x, y):
 PLACE = {
     # ESP32-H2 module, antenna (module y -10..-4) hangs over the top board edge
     "U2": (13.0, 4.0, 0),
-    "C9": (2.0, 2.3, 270), "C8": (2.0, 5.4, 270), "R11": (2.0, 10.4, 270),
+    "C9": (2.0, 2.3, 270), "C8": (2.0, 5.6, 270), "R11": (2.0, 10.4, 270),
     "R22": (20.3, 16.8, 0), "D2": (23.6, 16.8, 180),
     # TPS63900 power stage (unchanged since rev 1, pre-routed switching loop)
     "C1": (3.3, 21.7, 180), "R10": (6.6, 21.7, 0), "C2": (9.9, 21.7, 0), "C3": (9.9, 23.6, 0),
