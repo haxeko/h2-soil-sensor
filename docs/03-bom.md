@@ -18,7 +18,7 @@ API JLCPCB/LCSC tháng 11/2026; đơn giá là giá LCSC ở số lượng 10.
 | 5 | C6, C13 | 2 | 10nF | C_0603_1608Metric | CL10B103KB8NNNC | Samsung | [C1589](https://www.lcsc.com/product-detail/C1589.html) | Extended | 0.0074 | C6 lọc VBAT_ADC; C13 lọc SOIL_ADC |
 | 6 | C7, C14 | 2 | 1uF | C_0603_1608Metric | CL10A105KB8NNNC | Samsung | [C15849](https://www.lcsc.com/product-detail/C15849.html) | Basic | 0.0112 | Tụ VSENS, cố ý nhỏ để hạn dòng nạp |
 | 7 | D2 | 1 | RED | LED_0603_1608Metric | KT-0603R | Hubei KENTO | [C2286](https://www.lcsc.com/product-detail/C2286.html) | Basic | 0.0077 | LED trạng thái |
-| 8 | D3 | 1 | ESD 3.3V | D_SOD-523 | LESD5Z3.3T1G | LRC | [C136161](https://www.lcsc.com/product-detail/C136161.html) | Extended | 0.0160 (0.0194 @1) | TVS cho dây AOUT. Thay thế: onsemi ESD5Z3.3T1G ([C61148](https://www.lcsc.com/product-detail/C61148.html), Extended, tồn kho ít) |
+| 8 | D3 | 1 | ESD 3.3V | D_SOD-523 | ESD5Z3.3T1G | onsemi | [C61148](https://www.lcsc.com/product-detail/C61148.html) | Extended | 0.0372 | TVS một chiều cho dây AOUT (vạch = cực âm ở pad dưới). Thay thế: LRC LESD5Z3.3T1G (C136161), ESD5Z3.3C hai chiều (C502551) |
 | 9 | L1 | 1 | 2.2uH | L_1008_2520Metric | TFM252012ALMA2R2MTAA | TDK | [C404804](https://www.lcsc.com/product-detail/C404804.html) | Extended | 0.3924 | Thay thế: Murata DFE252012F-2R2M=P2 (C576403) |
 | 10 | Q1 | 1 | AO3415A | SOT-23 | AO3415A | AOS | [C133233](https://www.lcsc.com/product-detail/C133233.html) | Extended | 0.0985 | Chống ngược cực. Thay thế: DMG2305UX-7 (C150470) |
 | 11 | Q2, Q4 | 2 | AO3401A | SOT-23 | AO3401A | AOS | [C15127](https://www.lcsc.com/product-detail/C15127.html) | Basic | 0.0813 | Công tắc cầu chia pin / VSENS |
@@ -33,7 +33,7 @@ API JLCPCB/LCSC tháng 11/2026; đơn giá là giá LCSC ở số lượng 10.
 | 20 | SW1 | 1 | BOOT/USER | SW_Push_1P1T_XKB_TS-1187A | TS-1187A-B-A-B | XKB | [C318884](https://www.lcsc.com/product-detail/C318884.html) | Basic | 0.0215 | Nút BOOT/USER |
 | 21 | U1 | 1 | TPS63900DSKR | WSON-10-1EP_2.5x2.5mm_P0.5mm_EP1.2x2mm_ThermalVias_0.3mm | TPS63900DSKR | Texas Instruments | [C1518762](https://www.lcsc.com/product-detail/C1518762.html) | Extended | 0.8680 | Buck-boost 75 nA Iq |
 
-**Tổng SMT: 35 linh kiện, 21 mã, ≈ 2.05 USD/bo.** 7 mã là Extended (C1589, C136161, C404804, C133233, C23029, C22885, C1518762).
+**Tổng SMT: 35 linh kiện, 21 mã, ≈ 2.07 USD/bo.** 7 mã là Extended (C1589, C61148, C404804, C133233, C23029, C22885, C1518762).
 
 > “Basic” là linh kiện thư viện cơ bản của JLCPCB (không phí nạp cuộn); “Extended” có phí nạp ~3 USD/mã mỗi đơn.
 > Khi đặt hàng, kiểm tra trang xác nhận của JLC: đủ 21 dòng BOM / 35 vị trí trong CPL (kể cả U1) và đúng hướng chân 1 của

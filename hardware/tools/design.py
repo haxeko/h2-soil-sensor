@@ -167,7 +167,7 @@ COMPONENTS = [
     C(SE, "C13", "10nF", 139.7, 93.98, 0, "SOIL_ADC", "GND", note="Loc + nguon cho ADC sample"),
     C(SE, "C14", "1uF", 317.5, 93.98, 0, "VSENS", "GND", note="Dem VSENS (nho de han dong khoi dong, module co tu rieng)"),
     # --- ESD protection of the analog line that leaves the enclosure
-    P(SE, "D3", "Device", "D_Zener", "ESD 3.3V", "Diode_SMD:D_SOD-523", "C136161", "LESD5Z3.3T1G", "LRC",
+    P(SE, "D3", "Device", "D_Zener", "ESD 3.3V", "Diode_SMD:D_SOD-523", "C61148", "ESD5Z3.3T1G", "onsemi",
       106.68, 93.98, 90, {"1": "SOIL_AOUT", "2": "GND"}, note="TVS ESD 3.3V (SOD-523) cho day AOUT ra ngoai hop"),
 
     # ======================================================================== UI

@@ -590,9 +590,9 @@
     (property "Value" "ESD 3.3V" (at 104.14 106.68 90) (effects (font (size 1.27 1.27))))
     (property "Footprint" "Diode_SMD:D_SOD-523" (at 106.68 93.98 0) (effects (font (size 1.27 1.27)) hide))
     (property "Datasheet" "" (at 106.68 93.98 0) (effects (font (size 1.27 1.27)) hide))
-    (property "LCSC" "C136161" (at 106.68 93.98 0) (effects (font (size 1.27 1.27)) hide))
-    (property "MPN" "LESD5Z3.3T1G" (at 106.68 93.98 0) (effects (font (size 1.27 1.27)) hide))
-    (property "Manufacturer" "LRC" (at 106.68 93.98 0) (effects (font (size 1.27 1.27)) hide))
+    (property "LCSC" "C61148" (at 106.68 93.98 0) (effects (font (size 1.27 1.27)) hide))
+    (property "MPN" "ESD5Z3.3T1G" (at 106.68 93.98 0) (effects (font (size 1.27 1.27)) hide))
+    (property "Manufacturer" "onsemi" (at 106.68 93.98 0) (effects (font (size 1.27 1.27)) hide))
     (property "Note" "TVS ESD 3.3V (SOD-523) cho day AOUT ra ngoai hop"
       (at 106.68 93.98 0)
       (effects (font (size 1.27 1.27)) hide)

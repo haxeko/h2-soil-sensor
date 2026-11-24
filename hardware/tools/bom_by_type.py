@@ -22,7 +22,7 @@ def nat(r):
 
 def main():
     prices = json.load(open(sys.argv[1])) if len(sys.argv) > 1 else {}
-    prices.setdefault("C136161", {"p10": 0.016})
+    prices.setdefault("C61148", {"p10": 0.0372})
     comps, _ = gen_pcb.read_netlist()
     groups = {}
     for ref, c in comps.items():

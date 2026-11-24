@@ -111,7 +111,7 @@ GND, VBAT, VSENS, VIN_BB có PWR_FLAG để ERC trong KiCad không báo “power
                   2 VCC ── VSENS ── C14 1 µF ── GND
                   3 AOUT ── SOIL_AOUT ──┬── R12 1 kΩ ──┬── SOIL_ADC → IO1 (ADC1_CH0, 12 dB)
                                         │              └── C13 10 nF ── GND
-                                        └── D3 LESD5Z3.3T1G: K (1) = SOIL_AOUT, A (2) = GND
+                                        └── D3 ESD5Z3.3T1G: K (1) = SOIL_AOUT, A (2) = GND
 ```
 
 ### Cổng J4 và module
@@ -124,10 +124,10 @@ GND, VBAT, VSENS, VIN_BB có PWR_FLAG để ERC trong KiCad không báo “power
 ### Mạch vào analog (R12, C13) và chống ESD (D3)
 - **R12 1 kΩ** hạn dòng vào chân ADC khi cáp nhận xung/quá áp (D3 kẹp trước, R12 hạn phần dư). **C13 10 nF** cùng R12 tạo lọc
   RC τ = 10 µs (f<sub>c</sub> ≈ 16 kHz) chống nhiễu cáp và giữ điện tích cho tụ lấy mẫu của ADC.
-- **D3 LRC LESD5Z3.3T1G** (SOD-523, C136161): TVS một chiều, cathode ở SOIL_AOUT, anode ở GND. Xung dương bị kẹp (điện áp làm
+- **D3 onsemi ESD5Z3.3T1G** (SOD-523, C61148, rò ≤ 50 nA): TVS một chiều, cathode ở SOIL_AOUT, anode ở GND. Xung dương bị kẹp (điện áp làm
   việc 3.3 V ≥ AOUT tối đa 3.0 V), xung âm đi qua chiều thuận về GND. Theo mô tả LCSC: 200 W (8/20 µs), kẹp 14.1 V ở 11.2 A,
   105 pF (không ảnh hưởng tín hiệu gần như DC), rò ≤ 1 µA – phần rò này cộng vào tải của AOUT và được hiệu chuẩn cùng module.
-  Thay thế: onsemi ESD5Z3.3T1G (C61148, rò 50 nA, tồn kho ít).
+  Thay thế cùng vỏ SOD-523: LRC LESD5Z3.3T1G (C136161), ESD5Z3.3C hai chiều (C502551, không có cực).
 - **C14 1 µF** đặt cạnh J4 làm tụ đệm cục bộ cho module; cố ý nhỏ để hạn dòng nạp khi bật VSENS.
 - Firmware: chờ `CONFIG_SOIL_SETTLE_MS` = 1500 ms sau khi bật VSENS (module cần ~1 s để mạch dao động + tách đỉnh/RC ổn định),
   đọc 64 mẫu (trimmed mean); AOUT < 200 mV (`CONFIG_SOIL_MODULE_MIN_MV`) = không có module/chập → bỏ qua giá trị.
